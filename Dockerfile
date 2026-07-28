@@ -27,8 +27,6 @@ RUN composer install --no-dev --optimize-autoloader
 
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-RUN chmod +x /var/www/entrypoint.sh
+EXPOSE 80
 
-EXPOSE 10000
-
-ENTRYPOINT ["/var/www/entrypoint.sh"]
+CMD php artisan serve --host=0.0.0.0 --port=80
