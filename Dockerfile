@@ -22,15 +22,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www
 
 COPY . .
-# تأكد من أن الـ Working Directory هي الصحيحة (/var/www)
-# تثبيت Node.js (إذا لم تكن موجودة في الصورة الأساسية)
-# لنفترض أنك تستخدم صورة php-fpm، سنحتاج لتثبيت Node يدوياً.
-# إذا كانت صورتك الأساسية تحتوي على Node، تخطى السطر التالي.
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && apt-get install -y nodejs
 
-# ثم بناء الـ Assets
-RUN npm install
-RUN npm run build
 RUN composer install --no-dev --optimize-autoloader
 
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
