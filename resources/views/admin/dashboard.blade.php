@@ -385,32 +385,150 @@
         {{-- TAB 2: GAMES --}}
         {{-- ============================================= --}}
         <div id="admin-panel-games" class="admin-tab-panel hidden space-y-6">
+            {{-- RAWG Auto-Fetch --}}
             <div class="glass-card rounded-2xl border border-slate-800 p-5">
-                <h4 class="font-bold text-white text-sm mb-4"><i class="fa-solid fa-plus-circle text-emerald-500 ml-2"></i>إضافة لعبة جديدة</h4>
+                <h4 class="font-bold text-white text-sm mb-4"><i class="fa-solid fa-cloud-arrow-down text-blue-500 ml-2"></i>جلب لعبة من RAWG API</h4>
                 <form action="{{ route('admin.games.store') }}" method="POST" class="flex flex-col sm:flex-row gap-3">
                     @csrf
                     <input type="text" name="name" placeholder="اسم اللعبة بالإنجليزية (مثال: Skyrim)" required class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-600">
                     <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-blue-500 hover:from-violet-500 hover:to-blue-400 rounded-xl text-white text-xs font-bold transition-all shadow-lg shadow-violet-500/20"><i class="fa-solid fa-download ml-1"></i> جلب وإضافة</button>
                 </form>
             </div>
+
+            {{-- Manual Game Add --}}
+            <div class="glass-card rounded-2xl border border-emerald-500/20 p-5">
+                <h4 class="font-bold text-white text-sm mb-4"><i class="fa-solid fa-plus-circle text-emerald-500 ml-2"></i>إضافة لعبة يدوياً (Manual)</h4>
+                <form action="{{ route('admin.games.store-manual') }}" method="POST" enctype="multipart/form-data" class="space-y-3">
+                    @csrf
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[10px] text-slate-400 font-bold block mb-1">اسم اللعبة *</label>
+                            <input type="text" name="name" required placeholder="مثال: Skyrim Special Edition" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-600">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-400 font-bold block mb-1">Slug *</label>
+                            <input type="text" name="slug" required placeholder="skyrim-special-edition" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-600 font-mono">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-slate-400 font-bold block mb-1">الوصف</label>
+                        <textarea name="description" rows="2" placeholder="وصف اللعبة..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-600"></textarea>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[10px] text-slate-400 font-bold block mb-1">صورة الغلاف (رفع ملف)</label>
+                            <input type="file" name="thumbnail" accept="image/*" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-400 file:mr-3 file:px-3 file:py-1 file:rounded-lg file:border-0 file:bg-violet-600 file:text-white file:font-bold file:text-[10px] file:cursor-pointer focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-400 font-bold block mb-1">Nexus Domain</label>
+                            <input type="text" name="nexus_domain" placeholder="skyrimspecialedition" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-orange-300 placeholder-slate-600 font-mono focus:outline-none focus:border-orange-500">
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 rounded-xl text-white text-xs font-bold transition-all shadow-lg shadow-emerald-500/20"><i class="fa-solid fa-plus ml-1"></i> إضافة يدوياً</button>
+                    </div>
+                </form>
+            </div>
+
+            {{-- Manual Game Version Add --}}
+            <div class="glass-card rounded-2xl border border-blue-500/20 p-5">
+                <h4 class="font-bold text-white text-sm mb-4"><i class="fa-solid fa-code-branch text-blue-400 ml-2"></i>إضافة إصدار للعبة يدوياً (Manual Game Version Add)</h4>
+                <form action="{{ route('admin.game-versions.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    @csrf
+                    <div>
+                        <label class="text-[10px] text-slate-400 font-bold block mb-1">اختر اللعبة *</label>
+                        <select name="game_id" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
+                            <option value="">اختر اللعبة</option>
+                            @foreach($games as $g)
+                                <option value="{{ $g->id }}">{{ $g->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-slate-400 font-bold block mb-1">رقم/اسم الإصدار *</label>
+                        <input type="text" name="version" required placeholder="مثال: 1.6.1170 أو v2.0" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono">
+                    </div>
+                    <div class="flex items-end">
+                        <button type="submit" class="w-full py-2 bg-gradient-to-r from-blue-600 to-indigo-500 hover:from-blue-500 hover:to-indigo-400 rounded-xl text-white text-xs font-bold transition-all shadow-lg shadow-blue-500/20">
+                            <i class="fa-solid fa-plus ml-1"></i> إضافة الإصدار
+                        </button>
+                    </div>
+                </form>
+            </div>
+
             <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden">
                 <div class="p-4 border-b border-slate-800"><h4 class="font-bold text-white text-sm">الألعاب المسجلة ({{ $games->count() }})</h4></div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-right text-xs">
-                        <thead class="bg-slate-950/60 text-slate-400 border-b border-slate-800"><tr><th class="px-5 py-3">الصورة</th><th class="px-5 py-3">الاسم</th><th class="px-5 py-3">Slug</th><th class="px-5 py-3">التحديثات</th><th class="px-5 py-3 text-left">التحكم</th></tr></thead>
+                        <thead class="bg-slate-950/60 text-slate-400 border-b border-slate-800"><tr><th class="px-5 py-3">الصورة</th><th class="px-5 py-3">الاسم</th><th class="px-5 py-3">Slug</th><th class="px-5 py-3">التحديثات / الإصدارات</th><th class="px-5 py-3 text-left">التحكم</th></tr></thead>
                         <tbody class="divide-y divide-slate-800/50">
                             @forelse($games as $game)
                             <tr class="hover:bg-slate-800/30 transition-colors">
                                 <td class="px-5 py-3"><div class="w-10 h-10 rounded-lg overflow-hidden bg-slate-900 border border-slate-800">@if($game->thumbnail)<img src="{{ $game->thumbnail }}" class="w-full h-full object-cover">@else<div class="w-full h-full flex items-center justify-center text-slate-600"><i class="fa-solid fa-gamepad"></i></div>@endif</div></td>
                                 <td class="px-5 py-3 font-bold text-white">{{ $game->name }}</td>
                                 <td class="px-5 py-3 text-slate-500 font-mono text-[10px]">{{ $game->slug }}</td>
-                                <td class="px-5 py-3"><span class="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-lg font-bold text-[10px]">{{ $game->versions_count }} نسخة</span></td>
+                                <td class="px-5 py-3">
+                                    <div class="flex flex-wrap items-center gap-1">
+                                        @forelse($game->versions as $gv)
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-md font-mono text-[10px]">
+                                                {{ $gv->version }}
+                                                <form action="{{ route('admin.game-versions.delete', $gv) }}" method="POST" class="inline" onsubmit="return confirm('هل تريد حذف الإصدار {{ $gv->version }}؟')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-slate-400 hover:text-red-400 font-bold text-[11px] leading-none px-0.5">&times;</button>
+                                                </form>
+                                            </span>
+                                        @empty
+                                            <span class="text-slate-600 text-[10px]">لا يوجد إصدارات</span>
+                                        @endforelse
+                                    </div>
+                                </td>
                                 <td class="px-5 py-3 text-left"><div class="flex items-center gap-2 justify-end">
-                                    <button onclick="toggleEditModal('game-{{ $game->id }}')" class="text-violet-400 hover:text-violet-300 font-bold text-[10px]">تعديل</button>
+                                    <button onclick="toggleEditModal('game-{{ $game->id }}')" class="text-violet-400 hover:text-violet-300 font-bold text-[10px]">تعديل / إدارة الإصدارات</button>
                                     <form action="{{ route('admin.games.delete', $game) }}" method="POST" class="inline" onsubmit="return confirm('هل أنت متأكد؟')">@csrf @method('DELETE')<button type="submit" class="text-red-500 hover:text-red-400 font-bold text-[10px]">حذف</button></form>
                                 </div></td>
                             </tr>
-                            <div id="edit-modal-game-{{ $game->id }}" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4"><div class="glass-card p-6 rounded-2xl border border-slate-800 max-w-md w-full space-y-4"><div class="flex justify-between items-center"><h4 class="font-bold text-white text-sm">تعديل: {{ $game->name }}</h4><button onclick="toggleEditModal('game-{{ $game->id }}')" class="text-slate-500 hover:text-white text-lg">&times;</button></div><form action="{{ route('admin.games.update', $game) }}" method="POST" class="space-y-3 text-xs">@csrf @method('PUT')<div><label class="text-slate-400 font-bold block mb-1">الاسم</label><input type="text" name="name" value="{{ $game->name }}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-violet-600" required></div><div><label class="text-slate-400 font-bold block mb-1">Slug</label><input type="text" name="slug" value="{{ $game->slug }}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-violet-600" required></div><div><label class="text-slate-400 font-bold block mb-1">الوصف</label><textarea name="description" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-violet-600">{{ $game->description }}</textarea></div><div><label class="text-slate-400 font-bold block mb-1">رابط الصورة</label><input type="text" name="thumbnail" value="{{ $game->thumbnail }}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-violet-600"></div><div class="flex justify-end gap-2 pt-2"><button type="submit" class="px-5 py-2 bg-violet-600 hover:bg-violet-500 rounded-xl text-white font-bold transition-all">حفظ</button><button type="button" onclick="toggleEditModal('game-{{ $game->id }}')" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-400 font-bold transition-all">إلغاء</button></div></form></div></div>
+                            <div id="edit-modal-game-{{ $game->id }}" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+                                <div class="glass-card p-6 rounded-2xl border border-slate-800 max-w-md w-full space-y-4">
+                                    <div class="flex justify-between items-center"><h4 class="font-bold text-white text-sm">تعديل: {{ $game->name }}</h4><button onclick="toggleEditModal('game-{{ $game->id }}')" class="text-slate-500 hover:text-white text-lg">&times;</button></div>
+                                    <form action="{{ route('admin.games.update', $game) }}" method="POST" enctype="multipart/form-data" class="space-y-3 text-xs">
+                                        @csrf
+                                        @method('PUT')
+                                        <div><label class="text-slate-400 font-bold block mb-1">الاسم</label><input type="text" name="name" value="{{ $game->name }}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-violet-600" required></div>
+                                        <div><label class="text-slate-400 font-bold block mb-1">Slug</label><input type="text" name="slug" value="{{ $game->slug }}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-violet-600" required></div>
+                                        <div><label class="text-slate-400 font-bold block mb-1">الوصف</label><textarea name="description" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-violet-600">{{ $game->description }}</textarea></div>
+                                        <div><label class="text-slate-400 font-bold block mb-1">رابط الصورة (URL)</label><input type="text" name="thumbnail" value="{{ $game->thumbnail }}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-violet-600"></div>
+                                        <div><label class="text-slate-400 font-bold block mb-1">أو رفع صورة جديدة</label><input type="file" name="thumbnail_file" accept="image/*" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-400 file:mr-3 file:px-3 file:py-1 file:rounded-lg file:border-0 file:bg-violet-600 file:text-white file:font-bold file:text-[10px] file:cursor-pointer focus:outline-none"></div>
+                                        <div><label class="text-slate-400 font-bold block mb-1">Nexus Domain</label><input type="text" name="nexus_domain" value="{{ $game->nexus_domain }}" placeholder="skyrimspecialedition" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-orange-300 font-mono focus:outline-none focus:border-orange-500"></div>
+                                        <div class="flex justify-end gap-2 pt-2"><button type="submit" class="px-5 py-2 bg-violet-600 hover:bg-violet-500 rounded-xl text-white font-bold transition-all">حفظ البيانات الأساسية</button><button type="button" onclick="toggleEditModal('game-{{ $game->id }}')" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-400 font-bold transition-all">إلغاء</button></div>
+                                    </form>
+
+                                    {{-- Inline Game Version Management in Modal --}}
+                                    <div class="border-t border-slate-800 pt-3 mt-3 space-y-2 text-xs">
+                                        <label class="text-slate-300 font-bold block">إدارة إصدارات اللعبة المسجلة:</label>
+                                        <div class="flex flex-wrap gap-1 max-h-28 overflow-y-auto p-2 bg-slate-900/60 rounded-xl border border-slate-800">
+                                            @forelse($game->versions as $gv)
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-800 border border-slate-700 text-blue-300 rounded font-mono text-[10px]">
+                                                    {{ $gv->version }}
+                                                    <form action="{{ route('admin.game-versions.delete', $gv) }}" method="POST" class="inline" onsubmit="return confirm('حذف الإصدار {{ $gv->version }}؟')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-slate-400 hover:text-red-400 font-bold ml-1">&times;</button>
+                                                    </form>
+                                                </span>
+                                            @empty
+                                                <span class="text-slate-500 text-[10px]">لا توجد إصدارات حالياً.</span>
+                                            @endforelse
+                                        </div>
+                                        <form action="{{ route('admin.game-versions.store') }}" method="POST" class="flex gap-2 pt-1">
+                                            @csrf
+                                            <input type="hidden" name="game_id" value="{{ $game->id }}">
+                                            <input type="text" name="version" placeholder="إصدار جديد (مثال: 1.6.640)" required class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500 font-mono">
+                                            <button type="submit" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded-xl text-white font-bold text-xs transition">+ إضافة</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                             @empty
                             <tr><td colspan="5" class="px-5 py-10 text-center text-slate-500">لا توجد ألعاب مسجلة.</td></tr>
                             @endforelse
@@ -419,99 +537,7 @@
                 </div>
             </div>
 
-            {{-- ── Nexus Auto-Import Settings Per Game ──────────────── --}}
-            <div class="glass-card rounded-2xl border border-orange-500/20 p-5 space-y-4 mt-6">
-                <h4 class="font-bold text-white text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-robot text-orange-400"></i>
-                    إعداد الاستيراد التلقائي من Nexus — لكل لعبة
-                </h4>
-                <p class="text-xs text-slate-500">حدد "Nexus Domain" لكل لعبة (مثال: <code class="text-orange-300">skyrimspecialedition</code>) ثم فعّل الاستيراد التلقائي ليجلب المودات كل يوم تلقائياً.</p>
 
-                {{-- Quick Reference --}}
-                <div class="text-xs text-slate-500 bg-slate-900/40 p-3 rounded-xl border border-slate-800">
-                    <p class="font-bold text-slate-400 mb-1">🗺️ أشهر Domains في Nexus:</p>
-                    <div class="flex flex-wrap gap-2">
-                        @foreach(['skyrim'=>'Skyrim LE','skyrimspecialedition'=>'Skyrim SE','fallout4'=>'Fallout 4','fallout3'=>'Fallout 3','newvegas'=>'Fallout NV','witcher3'=>'Witcher 3','cyberpunk2077'=>'Cyberpunk 2077','baldursgate3'=>'Baldur\'s Gate 3','starfield'=>'Starfield','oblivion'=>'Oblivion'] as $dom => $label)
-                            <code class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-orange-300">{{ $dom }}</code>
-                        @endforeach
-                    </div>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs text-right">
-                        <thead class="border-b border-slate-800 text-slate-500 bg-slate-950/60">
-                            <tr>
-                                <th class="py-3 px-4">اللعبة</th>
-                                <th class="py-3 px-4">Nexus Domain</th>
-                                <th class="py-3 px-4 text-center">الحالة</th>
-                                <th class="py-3 px-4">آخر استيراد</th>
-                                <th class="py-3 px-4 text-center">إجراء سريع</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-800/50">
-                            @foreach($games as $g)
-                            <tr class="hover:bg-slate-800/20 transition-colors">
-                                <td class="py-3 px-4 font-bold text-slate-200">{{ $g->name }}</td>
-                                <td class="py-3 px-4">
-                                    <form method="POST" action="{{ route('admin.games.update', $g) }}" class="flex items-center gap-2">
-                                        @csrf @method('PUT')
-                                        <input type="hidden" name="name" value="{{ $g->name }}">
-                                        <input type="hidden" name="slug" value="{{ $g->slug }}">
-                                        <input type="text" name="nexus_domain"
-                                               value="{{ $g->nexus_domain }}"
-                                               placeholder="e.g. skyrimspecialedition"
-                                               class="w-48 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-orange-300 font-mono text-xs focus:outline-none focus:border-orange-500">
-                                        <input type="number" name="auto_import_limit"
-                                               value="{{ $g->auto_import_limit ?? 20 }}"
-                                               min="5" max="50"
-                                               title="الحد اليومي للاستيراد"
-                                               class="w-16 px-2 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 text-xs focus:outline-none focus:border-orange-500">
-                                        <input type="hidden" name="auto_import_enabled" value="0">
-                                        <label class="flex items-center gap-1.5 cursor-pointer bg-slate-900 px-2 py-1 rounded-lg border border-slate-800">
-                                            <input type="checkbox" name="auto_import_enabled" value="1" {{ $g->auto_import_enabled ? 'checked' : '' }}
-                                                   class="accent-orange-500 w-3 h-3">
-                                            <span class="text-[10px] text-slate-400 font-bold">تلقائي</span>
-                                        </label>
-                                        <button type="submit" class="px-3 py-1.5 rounded-lg bg-orange-600/20 border border-orange-500/30 hover:bg-orange-600/40 text-orange-400 text-xs font-bold transition">
-                                            حفظ
-                                        </button>
-                                    </form>
-                                </td>
-                                <td class="py-3 px-4 text-center">
-                                    @if($g->auto_import_enabled)
-                                        <span class="px-2 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                            <i class="fa-solid fa-check mr-1"></i> نشط
-                                        </span>
-                                    @else
-                                        <span class="px-2 py-1 rounded-full text-[10px] font-bold bg-slate-800 text-slate-500 border border-slate-700">
-                                            متوقف
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="py-3 px-4 text-slate-500 text-xs font-mono">
-                                    {{ $g->last_imported_at ? $g->last_imported_at->diffForHumans() : '—' }}
-                                </td>
-                                <td class="py-3 px-4 text-center">
-                                    @if($g->nexus_domain)
-                                    <form method="POST" action="{{ route('admin.nexus.import-game') }}" onsubmit="return confirm('هل تريد استيراد أفضل المودات لهذه اللعبة الآن؟')">
-                                        @csrf
-                                        <input type="hidden" name="game_id" value="{{ $g->id }}">
-                                        <button type="submit" class="flex items-center justify-center w-full gap-1.5 px-3 py-1.5 rounded-lg bg-violet-600/20 border border-violet-500/30 hover:bg-violet-600/40 text-violet-400 text-xs font-bold transition">
-                                            <i class="fa-solid fa-cloud-arrow-down"></i>
-                                            استيراد الآن
-                                        </button>
-                                    </form>
-                                    @else
-                                    <span class="text-slate-600 text-[10px]">—</span>
-                                    @endif
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
 
 
         {{-- ============================================= --}}

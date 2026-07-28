@@ -30,300 +30,343 @@
 @endsection
 
 @section('content')
-<!-- Hero Section with Premium Cinematic Background -->
-<div class="relative overflow-hidden rounded-3xl bg-slate-950 border border-slate-800 p-10 md:p-20 mb-12 text-center shadow-2xl group">
-    <!-- Cinematic Background Image (Fallback or dynamic) -->
-    <div class="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-overlay transition-transform duration-[10s] ease-in-out group-hover:scale-105" 
-         style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop');">
-    </div>
-    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent"></div>
-    <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-transparent to-slate-950"></div>
+<div class="space-y-16" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 
-    <div class="relative space-y-8 z-10">
-        <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-white/5 border border-white/10 text-slate-300 backdrop-blur-md">
-            <i class="fa-solid fa-crown text-amber-400 mr-2 rtl:ml-2"></i>
-            Premium Modding Experience
-        </span>
-        
-        <h1 class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-tight drop-shadow-xl">
-            <span class="text-white">LoadOrder</span><span class="text-violet-500">Hub</span>
-        </h1>
-        
-        <p class="max-w-2xl mx-auto text-sm md:text-lg text-slate-300 leading-relaxed font-medium text-shadow-sm">
-            Discover the ultimate mod packs and load orders carefully extracted and tested from top community creators. 
-            Enjoy a crash-free, highly optimized gaming experience.
-        </p>
-        
-        <div class="pt-6 flex flex-wrap items-center justify-center gap-6 text-sm font-bold text-slate-400">
-            <span class="flex items-center"><i class="fa-solid fa-shield-check text-emerald-500 mr-2 rtl:ml-2"></i> Stable Builds</span>
-            <span class="flex items-center"><i class="fa-solid fa-bolt text-amber-500 mr-2 rtl:ml-2"></i> Auto Extracted</span>
-            <span class="flex items-center"><i class="fa-solid fa-layer-group text-blue-500 mr-2 rtl:ml-2"></i> Curated Packs</span>
-        </div>
-    </div>
-</div>
+    <!-- ================================================================= -->
+    <!-- HERO SECTION WITH INTEGRATED SEARCH & QUICK ACTIONS -->
+    <!-- ================================================================= -->
+    <div class="relative overflow-hidden rounded-3xl bg-slate-950 border border-slate-800/80 p-8 md:p-16 text-center shadow-2xl group">
+        <!-- Ambient Radial Background Highlights -->
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-violet-600/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-25"></div>
 
-<!-- Global Stats Bar -->
-@if(isset($globalStats))
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-    <div class="glass-card rounded-2xl p-6 text-center border border-slate-800 border-b-4 border-b-violet-500 hover:-translate-y-1 transition-transform">
-        <i class="fa-solid fa-cube text-violet-400 text-2xl mb-2"></i>
-        <div class="text-2xl font-black text-white">{{ number_format($globalStats['mods']) }}</div>
-        <div class="text-xs text-slate-500 font-bold uppercase tracking-wider mt-1">{{ app()->getLocale() == 'ar' ? 'مود متاح' : 'Available Mods' }}</div>
-    </div>
-    <div class="glass-card rounded-2xl p-6 text-center border border-slate-800 border-b-4 border-b-emerald-500 hover:-translate-y-1 transition-transform">
-        <i class="fa-solid fa-boxes-stacked text-emerald-400 text-2xl mb-2"></i>
-        <div class="text-2xl font-black text-white">{{ number_format($globalStats['modpacks']) }}</div>
-        <div class="text-xs text-slate-500 font-bold uppercase tracking-wider mt-1">{{ app()->getLocale() == 'ar' ? 'تجميعة منشورة' : 'Curated Packs' }}</div>
-    </div>
-    <div class="glass-card rounded-2xl p-6 text-center border border-slate-800 border-b-4 border-b-blue-500 hover:-translate-y-1 transition-transform">
-        <i class="fa-solid fa-download text-blue-400 text-2xl mb-2"></i>
-        <div class="text-2xl font-black text-white">{{ number_format($globalStats['downloads']) }}</div>
-        <div class="text-xs text-slate-500 font-bold uppercase tracking-wider mt-1">{{ app()->getLocale() == 'ar' ? 'تحميل' : 'Total Downloads' }}</div>
-    </div>
-    <div class="glass-card rounded-2xl p-6 text-center border border-slate-800 border-b-4 border-b-amber-500 hover:-translate-y-1 transition-transform">
-        <i class="fa-solid fa-users text-amber-400 text-2xl mb-2"></i>
-        <div class="text-2xl font-black text-white">{{ number_format($globalStats['users']) }}</div>
-        <div class="text-xs text-slate-500 font-bold uppercase tracking-wider mt-1">{{ app()->getLocale() == 'ar' ? 'عضو نشط' : 'Active Members' }}</div>
-    </div>
-</div>
-@endif
-
-<!-- Trending Games Section -->
-@if($trendingGames && $trendingGames->count() > 0)
-<div class="space-y-6 mb-8">
-    <div class="border-b border-slate-800 pb-4 space-y-1">
-        <h2 class="text-xl font-bold tracking-wide flex items-center space-x-2 rtl:space-x-reverse">
-            <i class="fa-solid fa-fire-flame-curved text-amber-500"></i>
-            <span>{{ __('messages.trending') }}</span>
-        </h2>
-        <p class="text-xs text-slate-400">{{ __('messages.trending_desc') }}</p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        @foreach($trendingGames as $game)
-            <a href="{{ route('games.show', $game->slug) }}" class="group block relative rounded-2xl overflow-hidden border border-violet-500/20 hover:border-violet-500/50 bg-gradient-to-br from-violet-950/20 to-slate-900/40 p-4 transition-all duration-300 transform hover:-translate-y-1 shadow-lg shadow-violet-500/5 hover-scale-img">
-                <div class="relative h-40 rounded-xl overflow-hidden bg-slate-950 mb-4 skeleton">
-                    <img src="{{ $game->thumbnail_url }}" 
-                         alt="{{ $game->name }}" 
-                         onload="this.parentElement.classList.remove('skeleton')"
-                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent pointer-events-none"></div>
-                    
-                    <!-- Trending Badge -->
-                    <span class="absolute top-3 left-3 rtl:left-auto rtl:right-3 bg-amber-500/25 border border-amber-500/30 text-amber-300 text-[10px] px-2.5 py-0.5 rounded-full font-bold flex items-center space-x-1 rtl:space-x-reverse">
-                        <i class="fa-solid fa-fire text-amber-400 animate-pulse"></i>
-                        <span>Trending</span>
-                    </span>
-                </div>
-
-                <div class="space-y-1">
-                    <h3 class="text-base font-bold text-white group-hover:text-violet-400 transition-colors">
-                        {{ $game->name }}
-                    </h3>
-                    <div class="flex items-center justify-between text-xs text-slate-400 pt-2">
-                        <span>{{ $game->versions()->count() }} Versions</span>
-                        <span class="font-semibold text-violet-400"><i class="fa-regular fa-eye mr-1 rtl:ml-1"></i> {{ number_format($game->total_views) }} Views</span>
-                    </div>
-                </div>
-            </a>
-        @endforeach
-    </div>
-</div>
-@endif
-
-<!-- Latest Packs Section -->
-@if(isset($latestPacks) && $latestPacks->count() > 0)
-<div class="space-y-6 mb-8 mt-12">
-    <div class="border-b border-slate-800 pb-4 space-y-1">
-        <h2 class="text-xl font-bold tracking-wide flex items-center space-x-2 rtl:space-x-reverse">
-            <i class="fa-solid fa-clock text-emerald-500"></i>
-            <span>{{ app()->getLocale() == 'ar' ? 'أحدث التجميعات المضافة' : 'Newly Added Packs' }}</span>
-        </h2>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        @foreach($latestPacks as $pack)
-            <a href="{{ route('modpacks.show', $pack->id) }}" class="group block relative rounded-2xl overflow-hidden border border-slate-800 hover:border-emerald-500/50 bg-slate-900/40 p-4 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-emerald-500/10">
-                <div class="space-y-2">
-                    <h3 class="font-bold text-white group-hover:text-emerald-400 transition-colors line-clamp-1">
-                        {{ app()->getLocale() == 'ar' ? $pack->title_ar : $pack->title_en }}
-                    </h3>
-                    <div class="text-xs text-slate-400 line-clamp-2">
-                        {{ strip_tags(app()->getLocale() == 'ar' ? $pack->description_ar : $pack->description_en) }}
-                    </div>
-                    <div class="flex items-center justify-between text-[10px] text-slate-500 pt-2 border-t border-slate-800/50 mt-2">
-                        <span class="flex items-center gap-1">
-                            <i class="fa-solid fa-gamepad text-slate-400"></i>
-                            {{ $pack->gameVersions->first()->game->name ?? 'Unknown' }}
-                        </span>
-                        <span>{{ $pack->created_at->diffForHumans() }}</span>
-                    </div>
-                </div>
-            </a>
-        @endforeach
-    </div>
-</div>
-@endif
-
-<!-- Sponsored AdSense Banner Ad (Leaderboard) -->
-<div class="w-full text-center space-y-2 py-4 mb-8">
-    @php $headerAd = isset($globalAds) ? $globalAds->where('name', 'header')->first() : null; @endphp
-    @if($headerAd)
-        <div class="mx-auto w-full flex items-center justify-center">
-            {!! $headerAd->code !!}
-        </div>
-    @else
-        <span class="text-[9px] text-slate-600 font-bold uppercase tracking-widest">{{ __('messages.ad_space') }}</span>
-        <div class="mx-auto max-w-4xl h-24 rounded-2xl border border-dashed border-slate-800 bg-slate-950/30 flex items-center justify-center text-xs text-slate-500">
-            <div class="flex items-center space-x-3 rtl:space-x-reverse">
-                <i class="fa-solid fa-rectangle-ad text-3xl text-slate-700"></i>
-                <span class="text-slate-400 font-medium">Google AdSense Leaderboard Banner<br><span class="text-[10px] text-slate-600">728x90 responsive advertisement banner</span></span>
+        <div class="relative space-y-6 z-10 max-w-4xl mx-auto">
+            <!-- Badge Header -->
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold bg-violet-500/10 border border-violet-500/30 text-violet-300 backdrop-blur-md">
+                <i class="fa-solid fa-sparkles text-amber-400"></i>
+                <span>{{ app()->getLocale() == 'ar' ? 'منصة إدارة وتجميع المودات الاحترافية' : 'Next-Gen Game Modding & Load Order Platform' }}</span>
             </div>
-        </div>
-    @endif
-</div>
-
-<!-- All Games Grid Section -->
-<div class="space-y-6">
-    <div class="border-b border-slate-800 pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div class="space-y-1">
-            <h2 class="text-xl font-bold tracking-wide flex items-center space-x-2 rtl:space-x-reverse">
-                <i class="fa-solid fa-gamepad text-violet-500"></i>
-                <span>{{ __('messages.all_games') }}</span>
-            </h2>
-            <p class="text-xs text-slate-400">{{ __('messages.all_games_desc') }}</p>
-        </div>
-
-        <!-- Frontend Search & Category Filter Bar -->
-        <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto items-center">
-            <div class="relative w-full sm:w-64">
-                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
-                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                </span>
-                <input 
-                    type="text" 
-                    id="search-games-input" 
-                    oninput="filterGames()" 
-                    placeholder="{{ __('messages.search_placeholder') }}" 
-                    class="w-full bg-slate-950/60 border border-slate-800/80 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-600">
-            </div>
-
-            <div class="flex items-center space-x-2 space-x-reverse w-full sm:w-auto">
-                <span class="text-xs text-slate-500 font-bold whitespace-nowrap">{{ __('messages.category') }}:</span>
-                <select id="filter-category-select" onchange="filterGames()" class="w-full sm:w-36 bg-slate-950/60 border border-slate-800/80 rounded-xl px-2.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-600">
-                    <option value="all">{{ __('messages.all_categories') }}</option>
-                    <option value="rpg">RPG</option>
-                    <option value="strategy">Strategy</option>
-                    <option value="survival">Survival</option>
-                    <option value="sandbox">Sandbox</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
-    <div class="mb-4 hidden" id="pinned-games-section">
-        <h3 class="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
-            <i class="fa-solid fa-thumbtack text-violet-400"></i>
-            {{ app()->getLocale() == 'ar' ? 'الألعاب المثبتة' : 'Pinned Games' }}
-        </h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="pinned-games-grid"></div>
-        <div class="w-full h-px bg-slate-800/60 my-6"></div>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="games-grid-container">
-        <!-- Live fallback message for no results -->
-        <div class="col-span-full py-16 text-center text-slate-500 hidden" id="no-games-fallback">
-            <i class="fa-solid fa-folder-open text-4xl mb-4 text-slate-600"></i>
-            <p>Sorry, no games match your search criteria.</p>
-        </div>
-
-        @forelse($games as $game)
-            <a href="{{ route('games.show', $game->slug) }}" 
-               class="game-card-item group block glass-card rounded-2xl overflow-hidden border border-slate-800/80 hover:border-violet-600/40 transition-all duration-300 transform hover:-translate-y-1 hover-scale-img"
-               data-name="{{ strtolower($game->name) }}"
-               data-category="{{ str_contains(strtolower($game->slug), 'skyrim') || str_contains(strtolower($game->slug), 'cyberpunk') || str_contains(strtolower($game->slug), 'witcher') || str_contains(strtolower($game->slug), 'fallout') ? 'rpg' : (str_contains(strtolower($game->slug), 'hearts-of-iron') || str_contains(strtolower($game->slug), 'bannerlord') ? 'strategy' : (str_contains(strtolower($game->slug), 'minecraft') ? 'sandbox' : 'survival')) }}">
-                <!-- Thumbnail -->
-                <div class="relative h-48 overflow-hidden bg-slate-950">
-                    <img src="{{ $game->thumbnail_url }}" 
-                         alt="{{ $game->name }}" 
-                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#080c14] via-transparent to-transparent"></div>
-                    
-                    <!-- Version Badge -->
-                    <span class="absolute top-4 right-4 bg-slate-950/80 border border-slate-800 text-slate-300 text-xs px-2.5 py-1 rounded-md font-semibold">
-                        {{ $game->versions_count }} {{ trans_choice('Version|Versions', $game->versions_count) }}
-                    </span>
-
-                    <!-- Pin Button -->
-                    <button type="button" onclick="togglePinGame(event, {{ $game->id }})" class="absolute top-4 left-4 z-10 w-8 h-8 rounded bg-slate-900/80 hover:bg-violet-600 border border-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors pin-btn" id="pin-btn-{{ $game->id }}">
-                        <i class="fa-solid fa-thumbtack"></i>
+            
+            <!-- Main Title -->
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight leading-tight">
+                <span class="text-white">LoadOrder</span><span class="bg-gradient-to-r from-violet-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">Hub</span>
+            </h1>
+            
+            <!-- Description -->
+            <p class="max-w-2xl mx-auto text-sm md:text-base text-slate-300 leading-relaxed font-normal">
+                {{ app()->getLocale() == 'ar' 
+                    ? 'استكشف أفضل تجميعات المودات وقوائم التحميل المحسّنة التي تم اختبارها وتدقيقها لضمان تجربة ألعاب مستقرة وبدون تعارضات.' 
+                    : 'Discover curated mod packs and optimized load orders built and tested by top community creators. Enjoy a stable, crash-free modded gaming experience.' }}
+            </p>
+            
+            <!-- Hero Search Form -->
+            <form action="{{ route('mods.explorer') }}" method="GET" class="pt-4 max-w-2xl mx-auto">
+                <div class="relative flex items-center bg-slate-900/90 border border-slate-700/80 rounded-2xl p-2 shadow-2xl focus-within:border-violet-500 transition-all">
+                    <i class="fa-solid fa-magnifying-glass text-slate-400 px-3 text-sm"></i>
+                    <input 
+                        type="text" 
+                        name="search" 
+                        placeholder="{{ app()->getLocale() == 'ar' ? 'ابحث عن أي مود، تجميعة، أو لعبة...' : 'Search for any mod, collection, or game...' }}" 
+                        class="w-full bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none px-2 py-1"
+                        required>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold text-xs transition-all shadow-lg shadow-violet-500/25 shrink-0 flex items-center gap-2">
+                        <span>{{ app()->getLocale() == 'ar' ? 'بحث' : 'Search' }}</span>
+                        <i class="fa-solid fa-arrow-right text-[10px] rtl:rotate-180"></i>
                     </button>
                 </div>
+            </form>
 
-                <!-- Info -->
-                <div class="p-6">
-                    <h3 class="text-lg font-bold text-white group-hover:text-violet-400 transition-colors mb-2">
-                        {{ $game->name }}
-                    </h3>
-                    <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed">
-                        {{ $game->description }}
-                    </p>
-                    
-                    <!-- Bottom Action Link -->
-                    <div class="flex items-center justify-end mt-4 pt-4 border-t border-slate-800/60 text-xs text-violet-400 font-semibold group-hover:underline">
-                        <span>Explore Packs</span>
-                        <i class="fa-solid fa-arrow-right ml-1 rtl:mr-1 rtl:rotate-180"></i>
-                    </div>
-                </div>
-            </a>
-        @empty
-            <div class="col-span-full py-16 text-center text-slate-500">
-                <i class="fa-solid fa-folder-open text-4xl mb-4"></i>
-                <p>No games seeded yet. Please seed database or run scraping command.</p>
-            </div>
-        @endforelse
-
-        <!-- In-Grid Native Ad Cards Placement -->
-        <div class="game-ad-card glass-card rounded-2xl border border-dashed border-slate-800 p-6 flex flex-col justify-between items-center text-center space-y-4 min-h-[300px] animate-float">
-            <span class="text-[9px] text-slate-600 font-bold uppercase tracking-widest">{{ __('messages.ad_space') }}</span>
-            <div class="space-y-2">
-                <i class="fa-solid fa-rectangle-ad text-4xl text-slate-700"></i>
-                <h4 class="text-sm font-bold text-slate-300">Sponsored Ad Space</h4>
-                <p class="text-xs text-slate-500 leading-relaxed">Native Ad Container matching card dimensions for maximum organic CTR.</p>
-            </div>
-            <div class="w-full h-10 rounded-lg bg-slate-950/60 flex items-center justify-center text-[10px] text-slate-600 font-mono">
-                Responsive In-Feed Ad
+            <!-- Quick Action Links -->
+            <div class="pt-4 flex flex-wrap items-center justify-center gap-3 text-xs">
+                <a href="{{ route('mods.explorer') }}" class="px-4 py-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-colors flex items-center gap-2 font-semibold">
+                    <i class="fa-solid fa-cube text-cyan-400"></i>
+                    <span>{{ app()->getLocale() == 'ar' ? 'مكتبة المودات' : 'Mods Catalog' }}</span>
+                </a>
+                <a href="{{ route('mods.trending') }}" class="px-4 py-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-colors flex items-center gap-2 font-semibold">
+                    <i class="fa-solid fa-fire text-amber-400"></i>
+                    <span>{{ app()->getLocale() == 'ar' ? 'الأكثر تداولاً' : 'Trending' }}</span>
+                </a>
+                <a href="{{ route('mods.compare') }}" class="px-4 py-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-colors flex items-center gap-2 font-semibold">
+                    <i class="fa-solid fa-code-compare text-emerald-400"></i>
+                    <span>{{ app()->getLocale() == 'ar' ? 'مقارنة المودات' : 'Compare Mods' }}</span>
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- Newsletter Subscription Section -->
-    <div class="mt-16 w-full rounded-3xl bg-gradient-to-tr from-slate-900 to-slate-950 border border-slate-800 p-8 md:p-12 relative overflow-hidden animate-float-slow">
-        <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-violet-600/10 blur-3xl"></div>
-        <div class="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 rounded-full bg-blue-600/10 blur-3xl"></div>
+    <!-- ================================================================= -->
+    <!-- GLOBAL PLATFORM STATS BAR -->
+    <!-- ================================================================= -->
+    @if(isset($globalStats))
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="glass-card rounded-2xl p-5 text-center border border-slate-800 border-b-2 border-b-cyan-500/80 hover:-translate-y-1 transition-transform">
+            <i class="fa-solid fa-cube text-cyan-400 text-2xl mb-2"></i>
+            <div class="text-2xl font-extrabold text-white">{{ number_format($globalStats['mods']) }}</div>
+            <div class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider mt-1">{{ app()->getLocale() == 'ar' ? 'مود متاح' : 'Available Mods' }}</div>
+        </div>
+        <div class="glass-card rounded-2xl p-5 text-center border border-slate-800 border-b-2 border-b-emerald-500/80 hover:-translate-y-1 transition-transform">
+            <i class="fa-solid fa-boxes-stacked text-emerald-400 text-2xl mb-2"></i>
+            <div class="text-2xl font-extrabold text-white">{{ number_format($globalStats['modpacks']) }}</div>
+            <div class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider mt-1">{{ app()->getLocale() == 'ar' ? 'تجميعة منشورة' : 'Curated Packs' }}</div>
+        </div>
+        <div class="glass-card rounded-2xl p-5 text-center border border-slate-800 border-b-2 border-b-violet-500/80 hover:-translate-y-1 transition-transform">
+            <i class="fa-solid fa-download text-violet-400 text-2xl mb-2"></i>
+            <div class="text-2xl font-extrabold text-white">{{ number_format($globalStats['downloads']) }}</div>
+            <div class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider mt-1">{{ app()->getLocale() == 'ar' ? 'إجمالي التحميلات' : 'Total Downloads' }}</div>
+        </div>
+        <div class="glass-card rounded-2xl p-5 text-center border border-slate-800 border-b-2 border-b-amber-500/80 hover:-translate-y-1 transition-transform">
+            <i class="fa-solid fa-users text-amber-400 text-2xl mb-2"></i>
+            <div class="text-2xl font-extrabold text-white">{{ number_format($globalStats['users']) }}</div>
+            <div class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider mt-1">{{ app()->getLocale() == 'ar' ? 'عضو مسجل' : 'Active Members' }}</div>
+        </div>
+    </div>
+    @endif
+
+    <!-- ================================================================= -->
+    <!-- FEATURED / TRENDING GAMES SECTION -->
+    <!-- ================================================================= -->
+    @if($trendingGames && $trendingGames->count() > 0)
+    <div class="space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+            <div class="space-y-1">
+                <h2 class="text-xl font-bold tracking-wide flex items-center gap-2">
+                    <i class="fa-solid fa-fire text-amber-500"></i>
+                    <span>{{ app()->getLocale() == 'ar' ? 'الألعاب الأكثر شعبية' : 'Popular & Trending Games' }}</span>
+                </h2>
+                <p class="text-xs text-slate-400">{{ app()->getLocale() == 'ar' ? 'الألعاب الأكثر تفاعلاً وزيارة في التجميعات هذا الأسبوع' : 'Games with the highest modpack activity and views this week' }}</p>
+            </div>
+            <a href="#all-games-section" class="text-xs text-violet-400 hover:text-violet-300 font-bold flex items-center gap-1 transition-colors">
+                <span>{{ app()->getLocale() == 'ar' ? 'عرض كل الألعاب' : 'View All Games' }}</span>
+                <i class="fa-solid fa-chevron-down text-[10px]"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            @foreach($trendingGames as $game)
+                @include('games.partials.game_card', ['game' => $game, 'isTrending' => true])
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    <!-- ================================================================= -->
+    <!-- TOP COMMUNITY MODS SHOWCASE (NEW) -->
+    <!-- ================================================================= -->
+    @if(isset($topMods) && $topMods->count() > 0)
+    <div class="space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+            <div class="space-y-1">
+                <h2 class="text-xl font-bold tracking-wide flex items-center gap-2">
+                    <i class="fa-solid fa-cube text-cyan-400"></i>
+                    <span>{{ app()->getLocale() == 'ar' ? 'أبرز المودات الشائعة' : 'Top Community Mods' }}</span>
+                </h2>
+                <p class="text-xs text-slate-400">{{ app()->getLocale() == 'ar' ? 'المودات الأكثر تحميلاً وتقييماً من قِبل مجتمع اللاعبين' : 'Most downloaded and highly rated mods across all supported games' }}</p>
+            </div>
+            <a href="{{ route('mods.explorer') }}" class="text-xs text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1 transition-colors">
+                <span>{{ app()->getLocale() == 'ar' ? 'تصفح كل المودات' : 'Explore All Mods' }}</span>
+                <i class="fa-solid fa-arrow-right text-[10px] rtl:rotate-180"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            @foreach($topMods as $mod)
+            <a href="{{ route('mods.show', $mod->slug) }}" class="group block glass-card rounded-2xl overflow-hidden border border-slate-800 hover:border-cyan-500/40 p-4 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-cyan-500/10">
+                <div class="flex gap-4 items-center">
+                    <!-- Mod Thumbnail -->
+                    <div class="w-16 h-16 rounded-xl overflow-hidden bg-slate-950 shrink-0 border border-slate-800">
+                        <img src="{{ $mod->image_url ?: asset('images/mod-placeholder.png') }}" 
+                             alt="{{ $mod->name }}"
+                             loading="lazy" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    </div>
+
+                    <!-- Mod Details -->
+                    <div class="flex-1 min-w-0 space-y-1">
+                        <div class="flex items-center justify-between gap-1">
+                            <h3 class="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors truncate">
+                                {{ $mod->name }}
+                            </h3>
+                        </div>
+
+                        <p class="text-[11px] text-slate-400 line-clamp-1">
+                            {{ $mod->author ? (app()->getLocale() == 'ar' ? 'بواسطة: ' : 'By ') . $mod->author : (app()->getLocale() == 'ar' ? 'مود موثق' : 'Verified Mod') }}
+                        </p>
+
+                        <div class="flex items-center justify-between text-[10px] text-slate-500 pt-1">
+                            <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300 font-semibold truncate max-w-[110px]">
+                                {{ $mod->game->name ?? 'PC Game' }}
+                            </span>
+                            <span class="text-cyan-400 font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-download text-[9px]"></i>
+                                {{ number_format($mod->downloads_count) }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    <!-- ================================================================= -->
+    <!-- LATEST MOD PACKS (COLLECTIONS) SECTION -->
+    <!-- ================================================================= -->
+    @if(isset($latestPacks) && $latestPacks->count() > 0)
+    <div class="space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+            <div class="space-y-1">
+                <h2 class="text-xl font-bold tracking-wide flex items-center gap-2">
+                    <i class="fa-solid fa-boxes-stacked text-emerald-400"></i>
+                    <span>{{ app()->getLocale() == 'ar' ? 'أحدث تجميعات المودات' : 'Latest Mod Packs' }}</span>
+                </h2>
+                <p class="text-xs text-slate-400">{{ app()->getLocale() == 'ar' ? 'تجميعات جاهزة ومنسقة تم استخراجها حديثاً لتجربة فورية' : 'Freshly curated and tested mod collections ready to install' }}</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach($latestPacks as $pack)
+            <a href="{{ route('modpacks.show', $pack->id) }}" class="group block glass-card rounded-2xl overflow-hidden border border-slate-800/80 hover:border-emerald-500/50 p-5 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10">
+                <div class="space-y-3">
+                    <div class="flex items-start justify-between gap-2">
+                        <h3 class="text-base font-bold text-white group-hover:text-emerald-400 transition-colors line-clamp-1">
+                            {{ app()->getLocale() == 'ar' ? $pack->title_ar : $pack->title_en }}
+                        </h3>
+                        <span class="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[10px] font-bold shrink-0">
+                            {{ $pack->mods_count ?? $pack->mods()->count() }} {{ app()->getLocale() == 'ar' ? 'مود' : 'Mods' }}
+                        </span>
+                    </div>
+
+                    <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed font-normal">
+                        {{ strip_tags(app()->getLocale() == 'ar' ? $pack->description_ar : $pack->description_en) }}
+                    </p>
+
+                    <div class="flex items-center justify-between text-[11px] text-slate-400 pt-3 border-t border-slate-800/60 mt-2">
+                        <span class="flex items-center gap-1.5 font-medium text-slate-300">
+                            <i class="fa-solid fa-gamepad text-slate-400"></i>
+                            {{ $pack->gameVersions->first()?->game?->name ?? 'PC Gaming' }}
+                        </span>
+                        <span class="text-slate-400 font-mono text-[10px]">{{ $pack->created_at->diffForHumans() }}</span>
+                    </div>
+                </div>
+            </a>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    <!-- ================================================================= -->
+    <!-- SPONSORED ADVERTISEMENT BANNER -->
+    <!-- ================================================================= -->
+    <x-ad-slot type="leaderboard" />
+
+    <!-- ================================================================= -->
+    <!-- ALL GAMES INTERACTIVE DIRECTORY -->
+    <!-- ================================================================= -->
+    <div class="space-y-6 pt-4" id="all-games-section">
+        <div class="border-b border-slate-800/80 pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="space-y-1">
+                <h2 class="text-xl font-bold tracking-wide flex items-center gap-2">
+                    <i class="fa-solid fa-gamepad text-violet-500"></i>
+                    <span>{{ __('messages.all_games') }}</span>
+                </h2>
+                <p class="text-xs text-slate-400">{{ __('messages.all_games_desc') }}</p>
+            </div>
+
+            <!-- Frontend Filter Controls -->
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto items-center">
+                <div class="relative w-full sm:w-64">
+                    <span class="absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 px-3 flex items-center pointer-events-none text-slate-500">
+                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                    </span>
+                    <input 
+                        type="text" 
+                        id="search-games-input" 
+                        oninput="filterGames()" 
+                        placeholder="{{ __('messages.search_placeholder') }}" 
+                        class="w-full bg-slate-900/90 border border-slate-800 rounded-xl pl-9 rtl:pl-4 rtl:pr-9 pr-4 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-600 transition-colors">
+                </div>
+
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <span class="text-xs text-slate-500 font-bold whitespace-nowrap">{{ __('messages.category') }}:</span>
+                    <select id="filter-category-select" onchange="filterGames()" class="w-full sm:w-36 bg-slate-900/90 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-600">
+                        <option value="all">{{ __('messages.all_categories') }}</option>
+                        <option value="rpg">RPG</option>
+                        <option value="strategy">Strategy</option>
+                        <option value="survival">Survival</option>
+                        <option value="sandbox">Sandbox</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pinned Games Section -->
+        <div class="mb-4 hidden" id="pinned-games-section">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-thumbtack text-violet-400"></i>
+                <span>{{ app()->getLocale() == 'ar' ? 'الألعاب المثبتة' : 'Pinned Games' }}</span>
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="pinned-games-grid"></div>
+            <div class="w-full h-px bg-slate-800/60 my-6"></div>
+        </div>
+
+        <!-- Games Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="games-grid-container">
+            <!-- No Match Fallback -->
+            <div class="col-span-full py-16 text-center text-slate-500 hidden" id="no-games-fallback">
+                <i class="fa-solid fa-folder-open text-4xl mb-4 text-slate-600"></i>
+                <p>{{ app()->getLocale() == 'ar' ? 'عفواً، لا توجد ألعاب تطابق معايير البحث الحالية.' : 'Sorry, no games match your search criteria.' }}</p>
+            </div>
+
+            @forelse($games as $game)
+                @include('games.partials.game_card', ['game' => $game, 'isTrending' => false])
+            @empty
+                <div class="col-span-full py-16 text-center text-slate-500">
+                    <i class="fa-solid fa-folder-open text-4xl mb-4"></i>
+                    <p>{{ app()->getLocale() == 'ar' ? 'لا توجد ألعاب مسجلة حتى الآن.' : 'No games registered yet.' }}</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- NEWSLETTER SUBSCRIPTION CTA -->
+    <!-- ================================================================= -->
+    <div class="w-full rounded-3xl bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 border border-slate-800 p-8 md:p-12 relative overflow-hidden shadow-2xl">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-violet-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-cyan-600/10 rounded-full blur-3xl pointer-events-none"></div>
         
         <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-            <div class="text-center md:text-left rtl:md:text-right max-w-lg">
-                <h3 class="text-2xl md:text-3xl font-extrabold text-white mb-3">
-                    {{ app()->getLocale() == 'ar' ? 'لا تفوت أفضل المودات!' : 'Never Miss Top Mods!' }}
+            <div class="text-center md:text-left rtl:md:text-right max-w-lg space-y-2">
+                <h3 class="text-2xl md:text-3xl font-extrabold text-white">
+                    {{ app()->getLocale() == 'ar' ? 'اشترك للحصول على أحدث التحديثات' : 'Stay Updated with Latest Mods' }}
                 </h3>
-                <p class="text-sm text-slate-400 leading-relaxed">
-                    {{ app()->getLocale() == 'ar' ? 'اشترك في نشرتنا البريدية المجانية لنرسل لك أفضل تجميعات المودات الأسبوعية وأهم التحديثات مباشرة إلى بريدك الإلكتروني.' : 'Subscribe to our free weekly newsletter to get the best mod packs and major updates delivered straight to your inbox.' }}
+                <p class="text-xs md:text-sm text-slate-400 leading-relaxed font-normal">
+                    {{ app()->getLocale() == 'ar' 
+                        ? 'انضم إلى النشرة البريدية المجانية للحصول على أهم تجميعات المودات والتحديثات الأسبوعية مباشرة في بريدك.' 
+                        : 'Join our weekly newsletter to get the best mod packs, updates, and compatibility guides delivered straight to your inbox.' }}
                 </p>
             </div>
             
             <div class="w-full md:w-auto flex-grow max-w-md">
                 <form action="{{ route('newsletter.subscribe') }}" method="POST" class="flex flex-col sm:flex-row gap-3">
                     @csrf
-                    <input type="email" name="email" required placeholder="{{ app()->getLocale() == 'ar' ? 'أدخل بريدك الإلكتروني...' : 'Enter your email address...' }}" class="w-full flex-grow bg-slate-950/80 border border-slate-800 rounded-xl px-5 py-3 text-sm text-white focus:outline-none focus:border-violet-600 placeholder-slate-600 transition-colors">
-                    <button type="submit" class="whitespace-nowrap px-6 py-3 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-sm shadow-md transition-all shadow-violet-500/20">
+                    <input 
+                        type="email" 
+                        name="email" 
+                        required 
+                        placeholder="{{ app()->getLocale() == 'ar' ? 'أدخل بريدك الإلكتروني...' : 'Enter your email address...' }}" 
+                        class="w-full flex-grow bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-violet-600 placeholder-slate-600 transition-colors">
+                    <button type="submit" class="whitespace-nowrap px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-violet-500/20 transition-all">
                         <i class="fa-solid fa-paper-plane mr-2 rtl:ml-2"></i>
-                        {{ app()->getLocale() == 'ar' ? 'اشترك الآن' : 'Subscribe' }}
+                        <span>{{ app()->getLocale() == 'ar' ? 'اشترك الآن' : 'Subscribe' }}</span>
                     </button>
                 </form>
             </div>
         </div>
     </div>
+
 </div>
 @endsection
 
@@ -363,12 +406,6 @@
                 fallback.style.display = 'none';
             }
         }
-        
-        // Hide ad card if search results are empty or filtering
-        const adCard = document.querySelector('.game-ad-card');
-        if (adCard) {
-            adCard.style.display = (query !== '' || category !== 'all') ? 'none' : 'flex';
-        }
     }
 
     // Pinning Logic
@@ -377,7 +414,7 @@
     });
 
     function togglePinGame(event, gameId) {
-        event.preventDefault(); // Prevent navigating to the game page
+        event.preventDefault();
         let pinned = JSON.parse(localStorage.getItem('pinnedGames') || '[]');
         
         if (pinned.includes(gameId)) {
@@ -396,13 +433,14 @@
         const pinnedGrid = document.getElementById('pinned-games-grid');
         const mainGrid = document.getElementById('games-grid-container');
         
-        // Reset state: move everything back to main grid
+        if (!pinnedSection || !pinnedGrid || !mainGrid) return;
+
         const allCards = document.querySelectorAll('.game-card-item');
         allCards.forEach(card => {
             const btn = card.querySelector('.pin-btn');
             if (btn) {
                 btn.classList.remove('bg-violet-600', 'text-white', 'border-violet-500');
-                btn.classList.add('bg-slate-900/80', 'text-slate-400', 'border-slate-800');
+                btn.classList.add('bg-slate-950/70', 'text-slate-400', 'border-slate-800');
             }
             if (card.parentElement.id === 'pinned-games-grid') {
                 mainGrid.appendChild(card);
@@ -413,10 +451,11 @@
             pinnedSection.classList.remove('hidden');
             allCards.forEach(card => {
                 const pinBtn = card.querySelector('.pin-btn');
+                if (!pinBtn) return;
                 const gameId = parseInt(pinBtn.id.split('-').pop());
                 
                 if (pinned.includes(gameId)) {
-                    pinBtn.classList.remove('bg-slate-900/80', 'text-slate-400', 'border-slate-800');
+                    pinBtn.classList.remove('bg-slate-950/70', 'text-slate-400', 'border-slate-800');
                     pinBtn.classList.add('bg-violet-600', 'text-white', 'border-violet-500');
                     pinnedGrid.appendChild(card);
                 }

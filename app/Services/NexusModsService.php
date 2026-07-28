@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class NexusModsService
 {
@@ -148,22 +149,34 @@ class NexusModsService
 
     /**
      * Download and store a mod image locally.
+     * Uses proper User-Agent headers to bypass CDN hotlink restrictions.
      * Returns the stored relative path or null on failure.
      */
     public function downloadImage(string $url, string $slug): ?string
     {
         try {
-            $response = Http::timeout(30)->get($url);
-            if (!$response->successful()) return null;
+            // Skip if URL is from our own domain to avoid loop
+            if (str_contains($url, request()->getHost())) {
+                return null;
+            }
 
-            $ext       = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpg';
-            $filename  = "mods/{$slug}." . $ext;
-            $storagePath = storage_path("app/public/{$filename}");
+            $response = Http::withHeaders([
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept'     => 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+            ])->timeout(30)->get($url);
 
-            @mkdir(dirname($storagePath), 0755, true);
-            file_put_contents($storagePath, $response->body());
+            if (!$response->successful()) {
+                Log::warning("NexusMods downloadImage: HTTP {$response->status()} for {$url}");
+                return null;
+            }
 
-            return "/storage/{$filename}";
+            $ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpg';
+            $ext = explode('?', $ext)[0]; // Strip query params from extension
+            $filename = "mods/{$slug}." . $ext;
+
+            Storage::disk('public')->put($filename, $response->body());
+
+            return 'storage/' . $filename;
         } catch (\Exception $e) {
             Log::error("NexusMods downloadImage error: " . $e->getMessage());
             return null;
@@ -171,13 +184,63 @@ class NexusModsService
     }
 
     /**
-     * Sync an existing Mod record from Nexus Mods API (fetch details, image, version, gameVersions).
+     * Fetch mod details from Nexus API and return a normalized array.
+     * Combines data from the mod details endpoint, images endpoint, and files endpoint.
+     */
+    public function fetchModWithFullDetails(string $gameDomain, int $modId, ?\App\Models\Game $game = null): ?array
+    {
+        $data = $this->fetchMod($gameDomain, $modId);
+        if (!$data) {
+            return null;
+        }
+
+        $description = strip_tags($data['description'] ?? $data['summary'] ?? '');
+        $pictureUrl  = $data['picture_url'] ?? null;
+        $categoryName = $data['category_name'] ?? null;
+
+        // Fetch files to determine size
+        $files = $this->fetchModFiles($gameDomain, $modId);
+        $totalKb = 0;
+        foreach ($files as $f) {
+            $cat = strtoupper($f['category_name'] ?? '');
+            if ($cat === 'MAIN' || $cat === 'UPDATE' || ($f['is_primary'] ?? false)) {
+                $totalKb += (int)($f['size_kb'] ?? 0);
+            }
+        }
+
+        // Detect compatible game versions
+        $compatVersionIds = [];
+        if ($game) {
+            $compatVersionIds = $this->detectCompatibleVersions($files, $game);
+        }
+
+        return [
+            'name'               => $data['name'] ?? null,
+            'description'        => $description,
+            'summary'            => $data['summary'] ?? null,
+            'author'             => $data['author'] ?? null,
+            'version'            => $data['version'] ?? null,
+            'picture_url'        => $pictureUrl,
+            'category_name'      => $categoryName,
+            'downloads_count'    => ($data['mod_downloads'] ?? 0) + ($data['mod_unique_downloads'] ?? 0),
+            'endorsement_count'  => $data['endorsement_count'] ?? 0,
+            'file_size_kb'       => $totalKb,
+            'nexus_url'          => "https://www.nexusmods.com/{$gameDomain}/mods/{$modId}",
+            'compat_version_ids' => $compatVersionIds,
+            'tags'               => $this->extractTags($description, $categoryName ? [$categoryName] : []),
+            'fps_impact'         => $this->parseFpsImpact($description),
+        ];
+    }
+
+    /**
+     * Sync an existing Mod record from Nexus Mods API.
+     * Fetches details, downloads image locally, updates metadata gracefully.
      */
     public function syncModFromNexus(\App\Models\Mod $mod): bool
     {
-        $nexusUrl = $mod->nexus_url;
+        $nexusUrl   = $mod->nexus_url;
         $nexusModId = $mod->nexus_mod_id;
-        $game = $mod->game;
+        $game       = $mod->game;
 
         if (!$game) {
             return false;
@@ -195,7 +258,7 @@ class NexusModsService
         }
 
         if (!$nexusModId) {
-            // Fallback: If no Nexus info, ensure at least game versions are attached so it's not "unknown"
+            // Fallback: If no Nexus info, ensure at least game versions are attached
             if ($mod->gameVersions()->count() === 0) {
                 $allVersionIds = $game->versions()->pluck('id')->toArray();
                 if (!empty($allVersionIds)) {
@@ -205,48 +268,78 @@ class NexusModsService
             return false;
         }
 
-        $data = $this->fetchMod($gameDomain, $nexusModId);
-        if (!$data) {
+        // Use the unified fetch method
+        $details = $this->fetchModWithFullDetails($gameDomain, $nexusModId, $game);
+        if (!$details) {
             return false;
         }
 
-        $description = strip_tags($data['description'] ?? $data['summary'] ?? '');
-        $imageUrl = $data['picture_url'] ?? $mod->image_url;
-        $localPath = null;
-        if ($imageUrl) {
-            $localPath = $this->downloadImage($imageUrl, $mod->slug);
-        }
+        // Always try to download image locally for self-sufficiency
+        $imageUrl  = $details['picture_url'] ?? $mod->image_url;
+        $localPath = $mod->local_image_path;
 
-        $mod->update([
-            'nexus_mod_id'     => $nexusModId,
-            'name'             => ($mod->name && !str_contains($mod->name, '??')) ? $mod->name : ($data['name'] ?? $mod->name),
-            'description'      => !empty($description) ? $description : $mod->description,
-            'author'           => $data['author'] ?? $mod->author,
-            'version'          => $data['version'] ?? $mod->version,
-            'downloads_count'  => ($data['mod_downloads'] ?? 0) + ($data['mod_unique_downloads'] ?? 0),
-            'image_url'        => $imageUrl ?: $mod->image_url,
-            'local_image_path' => $localPath ?: $mod->local_image_path,
-            'tags'             => $this->extractTags($description),
-            'fps_impact'       => $this->parseFpsImpact($description) ?: $mod->fps_impact,
-            'nexus_url'        => "https://www.nexusmods.com/{$gameDomain}/mods/{$nexusModId}",
-        ]);
-
-        // Detect & sync compatible game versions and file size
-        $files = $this->fetchModFiles($gameDomain, $nexusModId);
-        $compatVersionIds = $this->detectCompatibleVersions($files, $game);
-
-        $totalKb = 0;
-        foreach ($files as $f) {
-            $cat = strtoupper($f['category_name'] ?? '');
-            if ($cat === 'MAIN' || $cat === 'UPDATE' || ($f['is_primary'] ?? false)) {
-                $totalKb += (int)($f['size_kb'] ?? 0);
+        if ($imageUrl && empty($localPath)) {
+            // Try ImageService first (more robust), fall back to our own method
+            $localPath = ImageService::downloadAndSaveImage($imageUrl, 'mods');
+            if (!$localPath) {
+                $localPath = $this->downloadImage($imageUrl, $mod->slug);
             }
         }
 
-        if ($totalKb > 0) {
-            $mod->update(['file_size_kb' => $totalKb]);
+        // Graceful update: only overwrite fields if API returned non-empty values
+        $updateData = [
+            'nexus_mod_id' => $nexusModId,
+            'nexus_url'    => $details['nexus_url'],
+        ];
+
+        // Name: only update if current name looks broken or is empty
+        if (empty($mod->name) || str_contains($mod->name, '??')) {
+            $updateData['name'] = $details['name'] ?? $mod->name;
         }
 
+        // Description: update only if API has one and current is empty/short
+        if (!empty($details['description']) && (empty($mod->description) || strlen($mod->description) < 20)) {
+            $updateData['description'] = $details['description'];
+        }
+
+        // Author, version: update if API provides and current is empty
+        if (!empty($details['author']) && empty($mod->author)) {
+            $updateData['author'] = $details['author'];
+        }
+        if (!empty($details['version']) && empty($mod->version)) {
+            $updateData['version'] = $details['version'];
+        }
+
+        // Downloads: always take the latest from API (it's cumulative)
+        if ($details['downloads_count'] > 0) {
+            $updateData['downloads_count'] = $details['downloads_count'];
+        }
+
+        // Image: update if API provides one
+        if (!empty($imageUrl)) {
+            $updateData['image_url'] = $imageUrl;
+        }
+        if (!empty($localPath)) {
+            $updateData['local_image_path'] = $localPath;
+        }
+
+        // Tags and FPS impact
+        if (!empty($details['tags'])) {
+            $updateData['tags'] = $details['tags'];
+        }
+        if (!empty($details['fps_impact'])) {
+            $updateData['fps_impact'] = $details['fps_impact'];
+        }
+
+        // File size
+        if ($details['file_size_kb'] > 0) {
+            $updateData['file_size_kb'] = $details['file_size_kb'];
+        }
+
+        $mod->update($updateData);
+
+        // Sync compatible game versions
+        $compatVersionIds = $details['compat_version_ids'] ?? [];
         if (!empty($compatVersionIds)) {
             $mod->gameVersions()->sync($compatVersionIds);
         } else {

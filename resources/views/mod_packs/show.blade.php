@@ -376,12 +376,7 @@
                                 @if($index === 2)
                                     <tr class="bg-violet-950/5 border-y border-dashed border-violet-800/30">
                                         <td colspan="3" class="px-6 py-6 text-center">
-                                            <div class="text-[9px] text-violet-500/80 font-bold uppercase tracking-widest mb-2">{{ __('messages.native_ad') }}</div>
-                                            <!-- Google AdSense Code Component -->
-                                            <div class="mx-auto max-w-lg h-16 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-center text-xs text-slate-500 px-4">
-                                                <i class="fa-solid fa-rectangle-ad text-violet-500 mr-2 rtl:ml-2 text-lg"></i>
-                                                <span>Sponsored Banner Ad (In-Article) - 468x60px placeholder</span>
-                                            </div>
+                                            <x-ad-slot type="in_content" />
                                         </td>
                                     </tr>
                                 @endif
@@ -568,15 +563,9 @@
                 </div>
             </div>
 
-            <!-- Sticky Sidebar Ad Slot (AdSense Placeholder) -->
-            <div class="glass-card p-4 rounded-2xl border border-slate-800 text-center space-y-3 sticky top-24">
-                <div class="text-[10px] text-slate-600 font-bold uppercase tracking-widest">{{ __('messages.ad_space') }}</div>
-                <div onclick="trackAdClick('modpacks_sidebar_ad')" class="h-64 rounded-xl border border-dashed border-slate-800 bg-slate-950/40 flex items-center justify-center text-xs text-slate-500 p-4 cursor-pointer hover:bg-slate-900/50 transition-colors">
-                    <div>
-                        <i class="fa-solid fa-rectangle-ad text-3xl mb-2 text-slate-700"></i>
-                        <p>AdSense Display Ad (Sidebar)<br><span class="text-[10px] text-slate-600">300x250 sticky banner</span></p>
-                    </div>
-                </div>
+            <!-- Sticky Sidebar Ad Slot -->
+            <div class="sticky top-24">
+                <x-ad-slot type="sidebar" />
             </div>
 
         </div>

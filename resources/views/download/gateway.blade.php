@@ -10,15 +10,7 @@
 <div class="max-w-4xl mx-auto space-y-8 py-6">
 
     <!-- Top Sponsored Ad Banner -->
-    <div class="w-full text-center space-y-2">
-        <span class="text-[9px] text-slate-600 font-bold uppercase tracking-widest">{{ __('messages.ad_space') }}</span>
-        <div class="mx-auto max-w-3xl h-24 rounded-2xl border border-dashed border-slate-800 bg-slate-950/40 flex items-center justify-center text-xs text-slate-500">
-            <div class="flex items-center space-x-3 rtl:space-x-reverse">
-                <i class="fa-solid fa-rectangle-ad text-3xl text-violet-500/50"></i>
-                <span class="text-slate-400 font-medium">Header Sponsored Ad Slot (728x90)<br><span class="text-[10px] text-slate-600">High CTR Placement</span></span>
-            </div>
-        </div>
-    </div>
+    <x-ad-slot type="leaderboard" />
 
     <!-- Main Gateway Box -->
     <div class="glass-card p-8 rounded-3xl border border-slate-800 space-y-6 text-center shadow-2xl relative overflow-hidden">
@@ -74,27 +66,10 @@
 
     </div>
 
-    <!-- Middle & Sidebar Ad Placements -->
+    <!-- Middle Ad Placements -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="glass-card p-6 rounded-2xl border border-slate-800 text-center space-y-3">
-            <span class="text-[9px] text-slate-600 font-bold uppercase tracking-widest">{{ __('messages.ad_space') }}</span>
-            <div class="h-48 rounded-xl border border-slate-800 bg-slate-950/40 flex items-center justify-center text-xs text-slate-500">
-                <div class="space-y-1">
-                    <i class="fa-solid fa-rectangle-ad text-2xl text-slate-700"></i>
-                    <p class="text-slate-400 font-medium">Sponsored Placement 1 (300x250)</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="glass-card p-6 rounded-2xl border border-slate-800 text-center space-y-3">
-            <span class="text-[9px] text-slate-600 font-bold uppercase tracking-widest">{{ __('messages.ad_space') }}</span>
-            <div class="h-48 rounded-xl border border-slate-800 bg-slate-950/40 flex items-center justify-center text-xs text-slate-500">
-                <div class="space-y-1">
-                    <i class="fa-solid fa-rectangle-ad text-2xl text-slate-700"></i>
-                    <p class="text-slate-400 font-medium">Sponsored Placement 2 (300x250)</p>
-                </div>
-            </div>
-        </div>
+        <x-ad-slot type="sidebar" />
+        <x-ad-slot type="sidebar" />
     </div>
 
 </div>

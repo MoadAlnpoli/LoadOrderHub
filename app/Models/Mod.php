@@ -39,6 +39,7 @@ class Mod extends Model
         'fps_impact',
         'local_image_path',
         'is_verified',
+        'file_size_kb',
     ];
 
     protected $casts = [

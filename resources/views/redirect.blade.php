@@ -45,35 +45,10 @@
         </p>
     </div>
 
-    <!-- Multi-Column Banner Ad Placements (AdSense Placeholder Slots) -->
+    <!-- Multi-Column Banner Ad Placements -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
-        <!-- Ad Slot 1 -->
-        <div class="glass-card p-6 rounded-2xl border border-dashed border-slate-800 text-center space-y-3 bg-slate-950/20 hover:border-violet-650/45 transition-colors">
-            <div class="text-[9px] text-slate-600 font-bold uppercase tracking-widest">SPONSORED ADVERTISEMENT</div>
-            <div class="h-64 rounded-xl border border-slate-850 bg-slate-950 flex items-center justify-center text-xs text-slate-500 p-4 relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-tr from-violet-950/5 to-blue-950/5 pointer-events-none"></div>
-                <div class="space-y-2">
-                    <i class="fa-solid fa-rectangle-ad text-4xl text-slate-700"></i>
-                    <p class="text-xs text-slate-400 font-bold">Responsive Display Banner Ad</p>
-                    <span class="text-[10px] text-slate-650 font-mono block">336x280 Large Rectangle</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Ad Slot 2 -->
-        <div class="glass-card p-6 rounded-2xl border border-dashed border-slate-800 text-center space-y-3 bg-slate-950/20 hover:border-violet-650/45 transition-colors">
-            <div class="text-[9px] text-slate-600 font-bold uppercase tracking-widest">SPONSORED ADVERTISEMENT</div>
-            <div class="h-64 rounded-xl border border-slate-850 bg-slate-950 flex items-center justify-center text-xs text-slate-500 p-4 relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-tr from-violet-950/5 to-blue-950/5 pointer-events-none"></div>
-                <div class="space-y-2">
-                    <i class="fa-solid fa-rectangle-ad text-4xl text-slate-700"></i>
-                    <p class="text-xs text-slate-400 font-bold">Responsive Display Banner Ad</p>
-                    <span class="text-[10px] text-slate-650 font-mono block">336x280 Large Rectangle</span>
-                </div>
-            </div>
-        </div>
-
+        <x-ad-slot type="sidebar" />
+        <x-ad-slot type="sidebar" />
     </div>
 </div>
 @endsection

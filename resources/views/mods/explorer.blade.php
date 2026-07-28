@@ -20,16 +20,10 @@
         <p class="text-xs text-slate-400 font-medium">Discover, search, and filter hundreds of mods catalogued across games, versions, and categories.</p>
     </div>
 
+
     <!-- Leaderboard Ad Slot -->
-    <div class="w-full text-center space-y-2 py-2">
-        <span class="text-[9px] text-slate-650 font-bold uppercase tracking-widest">{{ __('messages.ad_space') }}</span>
-        <div class="mx-auto max-w-4xl h-24 rounded-2xl border border-dashed border-slate-800 bg-slate-950/30 flex items-center justify-center text-xs text-slate-500">
-            <div class="flex items-center space-x-3 rtl:space-x-reverse">
-                <i class="fa-solid fa-rectangle-ad text-3xl text-slate-700"></i>
-                <span class="text-slate-400 font-medium">Google AdSense Leaderboard Banner<br><span class="text-[10px] text-slate-600">728x90 responsive advertisement banner</span></span>
-            </div>
-        </div>
-    </div>
+    <x-ad-slot type="leaderboard" class="py-2" />
+
 
     <!-- Filter Bar Card -->
     <form action="{{ route('mods.explorer') }}" method="GET" class="glass-card rounded-2xl border border-slate-800 p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
@@ -147,19 +141,8 @@
             </div>
 
             <!-- Native Ad Spot in Grid -->
-            @if($loop->index == 2)
-                <div class="glass-card rounded-2xl border border-dashed border-slate-800 p-5 flex flex-col justify-between items-center text-center space-y-4 min-h-[300px]">
-                    <span class="text-[9px] text-slate-650 font-bold uppercase tracking-widest">{{ __('messages.ad_space') }}</span>
-                    <div class="space-y-2">
-                        <i class="fa-solid fa-rectangle-ad text-4xl text-slate-700"></i>
-                        <h4 class="text-sm font-bold text-slate-300">In-Feed Native Mod Ad</h4>
-                        <p class="text-xs text-slate-500 leading-relaxed">Integrated advertisement banner matching card metrics for high CTR.</p>
-                    </div>
-                    <div class="w-full h-10 rounded-lg bg-slate-950/60 flex items-center justify-center text-[10px] text-slate-650 font-mono">
-                        Auto-optimized Ad slot
-                    </div>
-                </div>
-            @endif
+                        @if($loop->index == 2)
+                <x-ad-slot type="in_content" />
         @empty
             <div class="col-span-full py-16 text-center text-slate-500">
                 <i class="fa-solid fa-folder-open text-4xl mb-4"></i>
@@ -269,14 +252,6 @@
         });
     </script>
     <!-- Footer Ad Slot -->
-    <div class="w-full text-center space-y-2 py-4">
-        <span class="text-[9px] text-slate-650 font-bold uppercase tracking-widest">{{ __('messages.ad_space') }}</span>
-        <div class="mx-auto max-w-4xl h-24 rounded-2xl border border-dashed border-slate-800 bg-slate-950/30 flex items-center justify-center text-xs text-slate-500">
-            <div class="flex items-center space-x-3 rtl:space-x-reverse">
-                <i class="fa-solid fa-rectangle-ad text-3xl text-slate-700"></i>
-                <span class="text-slate-400 font-medium">Google AdSense Leaderboard Banner<br><span class="text-[10px] text-slate-600">728x90 responsive advertisement banner</span></span>
-            </div>
-        </div>
-    </div>
+    <x-ad-slot type="leaderboard" class="py-4" />
 </div>
 @endsection

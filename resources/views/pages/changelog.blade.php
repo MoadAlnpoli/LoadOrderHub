@@ -1,6 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Changelog')
+@section('title', 'Changelog - LoadOrderHub')
+
+@section('meta')
+    <meta name="description" content="See what's new on LoadOrderHub — platform updates, new features, bug fixes, and improvements to our mod pack management platform.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ route('changelog') }}">
+@endsection
 
 @section('content')
 <div class="max-w-4xl mx-auto space-y-8 my-8">
@@ -13,13 +19,54 @@
 
     <div class="relative border-l-2 border-slate-800 ml-4 rtl:ml-0 rtl:mr-4 rtl:border-r-2 rtl:border-l-0 space-y-12 pb-8">
         
+        <!-- v2.2.0 -->
+        <div class="relative pl-8 rtl:pr-8 rtl:pl-0">
+            <div class="absolute -left-[11px] rtl:-right-[11px] rtl:left-auto top-1 w-5 h-5 rounded-full bg-violet-500 border-4 border-slate-950"></div>
+            <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl font-black text-white">v2.2.0</span>
+                    <span class="px-2.5 py-0.5 rounded-full bg-violet-500/20 border border-violet-500/30 text-violet-300 text-[10px] font-bold">Latest</span>
+                </div>
+                <ul class="space-y-2 text-sm text-slate-300">
+                    <li class="flex gap-2">
+                        <i class="fa-solid fa-shield-halved text-violet-400 mt-1"></i>
+                        <span>Added GDPR-compliant Cookie Consent Banner with accept/decline options.</span>
+                    </li>
+                    <li class="flex gap-2">
+                        <i class="fa-solid fa-file-lines text-blue-400 mt-1"></i>
+                        <span>Expanded Privacy Policy with full GDPR rights documentation and Google AdSense disclosure.</span>
+                    </li>
+                    <li class="flex gap-2">
+                        <i class="fa-solid fa-file-lines text-blue-400 mt-1"></i>
+                        <span>Expanded Terms of Service with advertising, liability, and IP sections.</span>
+                    </li>
+                    <li class="flex gap-2">
+                        <i class="fa-solid fa-circle-question text-amber-400 mt-1"></i>
+                        <span>FAQ page expanded with FAQPage Schema.org markup for Google rich results.</span>
+                    </li>
+                    <li class="flex gap-2">
+                        <i class="fa-solid fa-address-card text-emerald-400 mt-1"></i>
+                        <span>About page updated with live platform statistics and mission statement.</span>
+                    </li>
+                    <li class="flex gap-2">
+                        <i class="fa-solid fa-sitemap text-cyan-400 mt-1"></i>
+                        <span>Added full site footer with navigation, legal links, and cookie settings control.</span>
+                    </li>
+                    <li class="flex gap-2">
+                        <i class="fa-solid fa-tags text-fuchsia-400 mt-1"></i>
+                        <span>Added manual game version management in Admin panel.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
         <!-- v2.1.0 -->
         <div class="relative pl-8 rtl:pr-8 rtl:pl-0">
             <div class="absolute -left-[11px] rtl:-right-[11px] rtl:left-auto top-1 w-5 h-5 rounded-full bg-emerald-500 border-4 border-slate-950"></div>
             <div class="space-y-3">
                 <div class="flex items-center gap-3">
                     <span class="text-2xl font-black text-white">v2.1.0</span>
-                    <span class="px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[10px] font-bold">Today</span>
+                    <span class="px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[10px] font-bold">July 2026</span>
                 </div>
                 <ul class="space-y-2 text-sm text-slate-300">
                     <li class="flex gap-2">

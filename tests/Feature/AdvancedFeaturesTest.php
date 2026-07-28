@@ -175,4 +175,36 @@ class AdvancedFeaturesTest extends TestCase
             'nexus_url' => 'https://www.nexusmods.com/skyrimspecialedition/mods/12604'
         ]);
     }
+
+    /**
+     * Test admin can manually add and delete game versions.
+     */
+    public function test_admin_can_add_and_delete_game_version_manually(): void
+    {
+        $this->withoutMiddleware();
+        $user = User::factory()->create(['is_admin' => true]);
+        $game = Game::create(['name' => 'Elden Ring', 'slug' => 'elden-ring']);
+
+        // Test creation
+        $response = $this->actingAs($user)->post('/admin/game-versions', [
+            'game_id' => $game->id,
+            'version' => '1.10.1',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('game_versions', [
+            'game_id' => $game->id,
+            'version' => '1.10.1',
+        ]);
+
+        $gv = GameVersion::where('game_id', $game->id)->where('version', '1.10.1')->first();
+
+        // Test deletion
+        $delResponse = $this->actingAs($user)->delete("/admin/game-versions/{$gv->id}");
+        $delResponse->assertRedirect();
+
+        $this->assertDatabaseMissing('game_versions', [
+            'id' => $gv->id,
+        ]);
+    }
 }

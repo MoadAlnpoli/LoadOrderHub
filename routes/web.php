@@ -24,9 +24,22 @@ Route::view('/faq', 'pages.faq')->name('faq');
 Route::view('/changelog', 'pages.changelog')->name('changelog');
 Route::view('/contact', 'pages.contact')->name('contact');
 Route::post('/contact', function (Illuminate\Http\Request $request) {
-    $request->validate(['name' => 'required', 'email' => 'required|email', 'message' => 'required']);
-    return back()->with('success', 'Message sent successfully! We will get back to you soon.');
+    $request->validate([
+        'name'    => 'required|min:2|max:100',
+        'email'   => 'required|email|max:255',
+        'message' => 'required|min:10|max:5000',
+        'subject' => 'nullable|string|max:100',
+    ]);
+    // Log the contact message (real email sending can be configured via MAIL_ env vars)
+    \Illuminate\Support\Facades\Log::info('Contact Form Submission', [
+        'name'    => $request->name,
+        'email'   => $request->email,
+        'subject' => $request->subject ?? 'general',
+        'message' => $request->message,
+    ]);
+    return back()->with('success', 'Thank you, ' . e($request->name) . '! Your message has been received. We\'ll get back to you at ' . e($request->email) . ' within 24–48 hours.');
 })->name('contact.post');
+
 
 // XML Dynamic Sitemap & Robots.txt
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
@@ -68,7 +81,9 @@ Route::post('/modpacks', [ModPackController::class, 'store'])->name('modpacks.st
 Route::get('/modpacks/{modPack}', [ModPackController::class, 'show'])->name('modpacks.show');
 Route::get('/embed/pack/{modPack:slug}', [ModPackController::class, 'embed'])->name('modpacks.embed');
 
-// Export load order as text file / JSON / MO2
+// Export load order as text file / JSON / MO2 / Markdown
+Route::get('/modpacks/{modPack}/export', [ModPackController::class, 'exportTxt'])->name('modpacks.export');
+Route::get('/modpacks/{modPack}/export-json', [ModPackController::class, 'exportJson'])->name('modpacks.export-json');
 Route::get('/modpacks/{modPack}/export-markdown', [ModPackController::class, 'exportMarkdown'])->name('modpacks.export-markdown');
 Route::get('/modpacks/{modPack}/export-mo2', [ModPackController::class, 'exportMo2'])->name('modpacks.export-mo2');
 
@@ -188,6 +203,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/mods/search-by-game', [ModController::class, 'searchModsByGame'])->name('mods.search-by-game');
     Route::post('/mods/suggest-conflicts', [ModController::class, 'suggestConflicts'])->name('mods.suggest-conflicts');
     Route::post('/mods/check-conflicts', [ModController::class, 'checkConflicts'])->name('mods.check-conflicts');
+
+    // Manual CRUD Management
+    Route::post('/games/manual', [AdminController::class, 'storeGameManual'])->name('games.store-manual');
+    Route::post('/game-versions', [AdminController::class, 'storeGameVersion'])->name('game-versions.store');
+    Route::delete('/game-versions/{gameVersion}', [AdminController::class, 'deleteGameVersion'])->name('game-versions.delete');
+    Route::post('/mods/manual', [AdminController::class, 'storeManualMod'])->name('mods.store-manual');
+    Route::post('/modpacks/manual', [AdminController::class, 'storeManualModPack'])->name('modpacks.store-manual');
+    Route::get('/api/mods-by-game', [AdminController::class, 'getModsByGame'])->name('api.mods-by-game');
 });
 
 // Mod comparison route (public)

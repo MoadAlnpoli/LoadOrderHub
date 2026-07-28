@@ -30,6 +30,7 @@ class AdminController extends Controller
         // Query collections with search filtering if present
         if (!empty($search)) {
             $games = Game::where('name', 'like', "%{$search}%")
+                ->with('versions')
                 ->withCount('versions')
                 ->get();
 
@@ -54,7 +55,7 @@ class AdminController extends Controller
                 ->paginate(10, ['*'], 'mods_page')
                 ->appends(['search' => $search]);
         } else {
-            $games = Game::withCount('versions')->get();
+            $games = Game::with('versions')->withCount('versions')->get();
             $modPacks = ModPack::with(['gameVersions.game', 'creator'])->latest()->get();
             $users = User::withCount(['comments', 'modPacks'])->get();
             $comments = Comment::with(['user', 'modPack'])->latest()->get();
@@ -347,6 +348,76 @@ class AdminController extends Controller
         }
 
         return back()->with('success', "تم جلب وإضافة اللعبة '{$game->name}' وتحديثاتها الرسمية بنجاح عبر RAWG API.");
+    }
+
+    /**
+     * Store a new game manually with optional image upload.
+     */
+    public function storeGameManual(Request $request)
+    {
+        $request->validate([
+            'name'        => 'required|string|max:255',
+            'slug'        => 'required|string|max:255|unique:games,slug',
+            'description' => 'nullable|string|max:5000',
+            'thumbnail'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'nexus_domain'=> 'nullable|string|max:100',
+        ]);
+
+        $thumbnailPath = null;
+        if ($request->hasFile('thumbnail')) {
+            $file = $request->file('thumbnail');
+            $filename = Str::slug($request->name) . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images/games'), $filename);
+            $thumbnailPath = '/images/games/' . $filename;
+        }
+
+        $game = Game::create([
+            'name'         => $request->name,
+            'slug'         => $request->slug,
+            'description'  => $request->description,
+            'thumbnail'    => $thumbnailPath,
+            'nexus_domain' => $request->nexus_domain,
+        ]);
+
+        // Create a default version if none exists
+        GameVersion::firstOrCreate([
+            'game_id' => $game->id,
+            'version' => '1.0',
+        ]);
+
+        return back()->with('success', "تم إضافة اللعبة '{$game->name}' يدوياً بنجاح.");
+    }
+
+    /**
+     * Store a game version manually.
+     */
+    public function storeGameVersion(Request $request)
+    {
+        $request->validate([
+            'game_id' => 'required|exists:games,id',
+            'version' => 'required|string|max:50',
+        ]);
+
+        $game = Game::findOrFail($request->game_id);
+
+        $gameVersion = GameVersion::firstOrCreate([
+            'game_id' => $game->id,
+            'version' => trim($request->version),
+        ]);
+
+        return back()->with('success', "تم إضافة الإصدار '{$gameVersion->version}' للعبة '{$game->name}' بنجاح.");
+    }
+
+    /**
+     * Delete a game version.
+     */
+    public function deleteGameVersion(GameVersion $gameVersion)
+    {
+        $gameName = $gameVersion->game?->name;
+        $versionStr = $gameVersion->version;
+        $gameVersion->delete();
+
+        return back()->with('success', "تم حذف الإصدار '{$versionStr}' من اللعبة '{$gameName}' بنجاح.");
     }
 
     /**
@@ -683,67 +754,127 @@ class AdminController extends Controller
     }
 
     /**
-     * Update game details.
+     * Update game details with optional image upload.
      */
     public function updateGame(Request $request, Game $game)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|unique:games,slug,' . $game->id,
-            'description' => 'nullable|string|max:2000',
-            'thumbnail' => 'nullable|string|max:1000',
+            'name'           => 'required|string|max:255',
+            'slug'           => 'required|string|unique:games,slug,' . $game->id,
+            'description'    => 'nullable|string|max:5000',
+            'thumbnail'      => 'nullable|string|max:1000',
+            'thumbnail_file' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'nexus_domain'   => 'nullable|string|max:100',
         ]);
 
-        $game->update($request->only(['name', 'slug', 'description', 'thumbnail']));
+        $updateData = $request->only(['name', 'slug', 'description', 'nexus_domain']);
+
+        // Handle file upload for thumbnail
+        if ($request->hasFile('thumbnail_file')) {
+            $file = $request->file('thumbnail_file');
+            $filename = Str::slug($request->name) . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images/games'), $filename);
+            $updateData['thumbnail'] = '/images/games/' . $filename;
+        } elseif ($request->filled('thumbnail')) {
+            $updateData['thumbnail'] = $request->thumbnail;
+        }
+
+        // Handle auto_import settings if present
+        if ($request->has('auto_import_enabled')) {
+            $updateData['auto_import_enabled'] = (bool) $request->auto_import_enabled;
+        }
+        if ($request->has('auto_import_limit')) {
+            $updateData['auto_import_limit'] = (int) $request->auto_import_limit;
+        }
+
+        $game->update($updateData);
 
         return back()->with('success', 'تم تحديث بيانات اللعبة بنجاح.');
     }
 
     /**
-     * Update modpack details.
+     * Update modpack details with optional thumbnail upload.
      */
     public function updateModPack(Request $request, ModPack $modPack)
     {
         $request->validate([
-            'title_en' => 'required|string|max:255',
-            'title_ar' => 'required|string|max:255',
-            'description_en' => 'nullable|string|max:2000',
-            'description_ar' => 'nullable|string|max:2000',
-            'views_count' => 'required|integer|min:0',
-            'upvotes' => 'required|integer|min:0',
-            'downvotes' => 'required|integer|min:0',
-            'youtube_video_id' => 'nullable|string|max:50',
+            'title_en'          => 'required|string|max:255',
+            'title_ar'          => 'required|string|max:255',
+            'description_en'    => 'nullable|string|max:5000',
+            'description_ar'    => 'nullable|string|max:5000',
+            'views_count'       => 'required|integer|min:0',
+            'upvotes'           => 'required|integer|min:0',
+            'downvotes'         => 'required|integer|min:0',
+            'youtube_video_id'  => 'nullable|string|max:50',
+            'thumbnail_file'    => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
-        $modPack->update($request->only([
+        $updateData = $request->only([
             'title_en', 'title_ar', 'description_en', 'description_ar',
             'views_count', 'upvotes', 'downvotes', 'youtube_video_id'
-        ]));
+        ]);
+
+        // Handle thumbnail file upload
+        if ($request->hasFile('thumbnail_file')) {
+            $file = $request->file('thumbnail_file');
+            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('modpacks', $filename, 'public');
+            $updateData['local_thumbnail_path'] = 'storage/modpacks/' . $filename;
+        }
+
+        $modPack->update($updateData);
 
         return back()->with('success', 'تم تحديث تجميعة المودات بنجاح.');
     }
 
     /**
-     * Update mod details.
+     * Update mod details with optional image upload and full description support.
      */
-     public function updateMod(Request $request, Mod $mod)
+    public function updateMod(Request $request, Mod $mod)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'load_order' => 'required|integer|min:1',
-            'nexus_url' => 'nullable|url|max:500',
-            'steam_url' => 'nullable|url|max:500',
+            'name'         => 'required|string|max:255',
+            'load_order'   => 'required|integer|min:1',
+            'description'  => 'nullable|string|max:5000',
+            'author'       => 'nullable|string|max:255',
+            'version'      => 'nullable|string|max:50',
+            'nexus_url'    => 'nullable|url|max:500',
+            'steam_url'    => 'nullable|url|max:500',
             'download_url' => 'nullable|url|max:500',
-            'image_url' => 'nullable|url|max:1000',
+            'image_url'    => 'nullable|url|max:1000',
+            'image_file'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'game_id'      => 'nullable|exists:games,id',
         ]);
 
-        $mod->update($request->only([
-            'name', 'load_order', 'nexus_url', 'steam_url', 'download_url', 'image_url'
-        ]));
+        $updateData = $request->only([
+            'name', 'load_order', 'description', 'author', 'version',
+            'nexus_url', 'steam_url', 'download_url', 'image_url'
+        ]);
 
-        // Auto-sync from Nexus Mods if nexus_url is present
-        $nexusService = app(\App\Services\NexusModsService::class);
-        $nexusService->syncModFromNexus($mod);
+        // Handle game change
+        if ($request->filled('game_id')) {
+            $updateData['game_id'] = $request->game_id;
+        }
+
+        // Handle image file upload
+        if ($request->hasFile('image_file')) {
+            $localPath = \App\Services\ImageService::downloadAndSaveImage(
+                $request->file('image_file')->store('temp', 'public'), 'mods'
+            );
+            // Direct file save approach
+            $file = $request->file('image_file');
+            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('mods', $filename, 'public');
+            $updateData['local_image_path'] = 'storage/mods/' . $filename;
+        }
+
+        $mod->update($updateData);
+
+        // Auto-sync from Nexus Mods if nexus_url is present and has no local image yet
+        if ($request->filled('nexus_url') && empty($mod->local_image_path)) {
+            $nexusService = app(\App\Services\NexusModsService::class);
+            $nexusService->syncModFromNexus($mod);
+        }
 
         // Ensure at least game versions are attached if none exist
         if ($mod->gameVersions()->count() === 0 && $mod->game && $mod->game->versions->isNotEmpty()) {
@@ -1179,31 +1310,63 @@ class AdminController extends Controller
         $game = Game::findOrFail($request->game_id);
         $knownVersions = \App\Models\GameVersion::where('game_id', $game->id)->pluck('version')->toArray();
 
-        // Retrieve FULL details from Nexus page (image, description, versions, steam link)
-        $details = \App\Services\NexusSearchService::getModDetails($request->nexus_url, $knownVersions);
+        // First try the official Nexus API if we can parse a mod ID from the URL
+        $imageUrl    = null;
+        $description = null;
+        $steamUrl    = null;
+        $localImagePath = null;
+        $matchedVersions = [];
+
+        preg_match('/nexusmods\.com\/([^\/]+)\/mods\/(\d+)/i', $request->nexus_url, $nexusMatch);
+        if (!empty($nexusMatch[2])) {
+            $nexusService = app(\App\Services\NexusModsService::class);
+            $apiDetails = $nexusService->fetchModWithFullDetails($nexusMatch[1], (int)$nexusMatch[2], $game);
+            if ($apiDetails) {
+                $imageUrl    = $apiDetails['picture_url'];
+                $description = $apiDetails['description'];
+                $matchedVersions = $apiDetails['compat_version_ids'];
+            }
+        }
+
+        // Fallback to HTML scraping if API didn't provide data
+        if (empty($imageUrl) || empty($description)) {
+            $scrapeDetails = \App\Services\NexusSearchService::getModDetails($request->nexus_url, $knownVersions);
+            if (empty($imageUrl))    $imageUrl    = $scrapeDetails['image_url'] ?? null;
+            if (empty($description)) $description = $scrapeDetails['description'] ?? null;
+            $steamUrl = $scrapeDetails['steam_url'] ?? null;
+            if (empty($matchedVersions) && !empty($scrapeDetails['matched_versions'])) {
+                $matchedVersions = \App\Models\GameVersion::where('game_id', $game->id)
+                    ->whereIn('version', $scrapeDetails['matched_versions'])
+                    ->pluck('id')
+                    ->toArray();
+            }
+        }
+
+        // Always download image locally for self-sufficiency
+        if (!empty($imageUrl)) {
+            $localImagePath = \App\Services\ImageService::downloadAndSaveImage($imageUrl, 'mods');
+        }
 
         // Find max load order for this game
         $maxLoadOrder = Mod::where('game_id', $game->id)->max('load_order') ?? 0;
 
         $mod = Mod::create([
-            'game_id'      => $game->id,
-            'name'         => $request->name,
-            'slug'         => str()->slug($request->name) ?: uniqid(),
-            'load_order'   => $maxLoadOrder + 1,
-            'nexus_url'    => $request->nexus_url,
-            'steam_url'    => $details['steam_url']    ?? null,
-            'image_url'    => $details['image_url']    ?? null,
-            'description'  => $details['description']  ?? null,
-            'download_url' => $request->nexus_url,
+            'game_id'          => $game->id,
+            'name'             => $request->name,
+            'slug'             => str()->slug($request->name) ?: uniqid(),
+            'load_order'       => $maxLoadOrder + 1,
+            'nexus_url'        => $request->nexus_url,
+            'steam_url'        => $steamUrl,
+            'image_url'        => $imageUrl,
+            'local_image_path' => $localImagePath,
+            'description'      => $description,
+            'download_url'     => $request->nexus_url,
+            'nexus_mod_id'     => $nexusMatch[2] ?? null,
         ]);
 
         // Sync matched game versions to the mod
-        if (!empty($details['matched_versions'])) {
-            $versionIds = \App\Models\GameVersion::where('game_id', $game->id)
-                ->whereIn('version', $details['matched_versions'])
-                ->pluck('id')
-                ->toArray();
-            $mod->gameVersions()->sync($versionIds);
+        if (!empty($matchedVersions)) {
+            $mod->gameVersions()->sync($matchedVersions);
         } else {
             // Fallback: link to the latest known version of the game
             $latestVersion = \App\Models\GameVersion::where('game_id', $game->id)
@@ -1218,13 +1381,14 @@ class AdminController extends Controller
             'success' => true,
             'message' => 'تم جلب المود وإضافته بنجاح مع الصورة والبيانات والنسخ المتوافقة!',
             'mod'     => [
-                'id'          => $mod->id,
-                'name'        => $mod->name,
-                'image_url'   => $mod->image_url,
-                'description' => $mod->description,
-                'nexus_url'   => $mod->nexus_url,
-                'steam_url'   => $mod->steam_url,
-                'load_order'  => $mod->load_order,
+                'id'               => $mod->id,
+                'name'             => $mod->name,
+                'image_url'        => $mod->image_url,
+                'local_image_path' => $mod->local_image_path,
+                'description'      => $mod->description,
+                'nexus_url'        => $mod->nexus_url,
+                'steam_url'        => $mod->steam_url,
+                'load_order'       => $mod->load_order,
             ]
         ]));
     }
@@ -1300,5 +1464,179 @@ class AdminController extends Controller
         }
         
         return redirect()->back()->with('success', "تم فحص وتحميل {$count} صورة بنجاح!");
+    }
+
+    /**
+     * Store a new mod manually with optional image upload.
+     */
+    public function storeManualMod(Request $request)
+    {
+        $request->validate([
+            'game_id'      => 'required|exists:games,id',
+            'name'         => 'required|string|max:255',
+            'description'  => 'nullable|string|max:5000',
+            'author'       => 'nullable|string|max:255',
+            'version'      => 'nullable|string|max:50',
+            'nexus_url'    => 'nullable|url|max:500',
+            'steam_url'    => 'nullable|url|max:500',
+            'download_url' => 'nullable|url|max:500',
+            'image_file'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'image_url'    => 'nullable|url|max:1000',
+        ]);
+
+        $game = Game::findOrFail($request->game_id);
+        $maxLoadOrder = Mod::where('game_id', $game->id)->max('load_order') ?? 0;
+
+        // Handle image: prefer file upload, fallback to URL, then try Nexus API
+        $localImagePath = null;
+        $imageUrl = $request->image_url;
+
+        if ($request->hasFile('image_file')) {
+            $file = $request->file('image_file');
+            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('mods', $filename, 'public');
+            $localImagePath = 'storage/mods/' . $filename;
+        } elseif (!empty($imageUrl)) {
+            $localImagePath = \App\Services\ImageService::downloadAndSaveImage($imageUrl, 'mods');
+        }
+
+        // If nexus_url is provided, try to fetch additional data from Nexus API
+        $nexusModId = null;
+        if ($request->filled('nexus_url')) {
+            preg_match('/nexusmods\.com\/([^\/]+)\/mods\/(\d+)/i', $request->nexus_url, $m);
+            if (isset($m[2])) {
+                $nexusModId = (int)$m[2];
+                // If we still have no image, try fetching from Nexus API
+                if (empty($localImagePath) && empty($imageUrl)) {
+                    $nexusService = app(\App\Services\NexusModsService::class);
+                    $apiDetails = $nexusService->fetchModWithFullDetails($m[1], $nexusModId, $game);
+                    if ($apiDetails) {
+                        $imageUrl = $apiDetails['picture_url'] ?? null;
+                        if ($imageUrl) {
+                            $localImagePath = \App\Services\ImageService::downloadAndSaveImage($imageUrl, 'mods');
+                        }
+                        // Fill missing fields from API
+                        if (empty($request->description) && !empty($apiDetails['description'])) {
+                            $request->merge(['description' => $apiDetails['description']]);
+                        }
+                        if (empty($request->author) && !empty($apiDetails['author'])) {
+                            $request->merge(['author' => $apiDetails['author']]);
+                        }
+                    }
+                }
+            }
+        }
+
+        $mod = Mod::create([
+            'game_id'          => $game->id,
+            'name'             => $request->name,
+            'slug'             => Str::slug($request->name) ?: ('mod-' . Str::random(6)),
+            'description'      => $request->description,
+            'author'           => $request->author,
+            'version'          => $request->version,
+            'load_order'       => $maxLoadOrder + 1,
+            'nexus_url'        => $request->nexus_url,
+            'steam_url'        => $request->steam_url,
+            'download_url'     => $request->download_url ?: $request->nexus_url,
+            'image_url'        => $imageUrl,
+            'local_image_path' => $localImagePath,
+            'nexus_mod_id'     => $nexusModId,
+            'status'           => 'published',
+        ]);
+
+        // Attach all game versions by default
+        $allVersionIds = $game->versions()->pluck('id')->toArray();
+        if (!empty($allVersionIds)) {
+            $mod->gameVersions()->sync($allVersionIds);
+        }
+
+        return back()->with('success', "تم إضافة المود '{$mod->name}' يدوياً بنجاح.");
+    }
+
+    /**
+     * Store a new mod pack (collection) manually with optional thumbnail and mod selection.
+     */
+    public function storeManualModPack(Request $request)
+    {
+        $request->validate([
+            'title_en'        => 'required|string|max:255',
+            'title_ar'        => 'required|string|max:255',
+            'description_en'  => 'nullable|string|max:5000',
+            'description_ar'  => 'nullable|string|max:5000',
+            'game_id'         => 'required|exists:games,id',
+            'version_id'      => 'nullable|exists:game_versions,id',
+            'thumbnail_file'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'mod_ids'         => 'nullable|array',
+            'mod_ids.*'       => 'exists:mods,id',
+        ]);
+
+        // Handle thumbnail upload
+        $localThumbnailPath = null;
+        if ($request->hasFile('thumbnail_file')) {
+            $file = $request->file('thumbnail_file');
+            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('modpacks', $filename, 'public');
+            $localThumbnailPath = 'storage/modpacks/' . $filename;
+        }
+
+        // Get or create bot user
+        $creator = auth()->user();
+
+        $modPack = ModPack::create([
+            'title_en'             => $request->title_en,
+            'title_ar'             => $request->title_ar,
+            'description_en'       => $request->description_en ?: '',
+            'description_ar'       => $request->description_ar ?: '',
+            'local_thumbnail_path' => $localThumbnailPath,
+            'views_count'          => 0,
+            'upvotes'              => 0,
+            'downvotes'            => 0,
+            'is_published'         => true,
+            'created_by'           => $creator->id,
+        ]);
+
+        // Attach game version
+        if ($request->filled('version_id')) {
+            $modPack->gameVersions()->sync([$request->version_id]);
+        } else {
+            // Attach all versions of the selected game
+            $versionIds = GameVersion::where('game_id', $request->game_id)->pluck('id')->toArray();
+            if (!empty($versionIds)) {
+                $modPack->gameVersions()->sync($versionIds);
+            }
+        }
+
+        // Assign selected mods to this collection
+        if (!empty($request->mod_ids)) {
+            foreach ($request->mod_ids as $modId) {
+                $mod = Mod::find($modId);
+                if ($mod) {
+                    // Update mod_pack_id on the mod (existing schema uses FK)
+                    $mod->update(['mod_pack_id' => $modPack->id]);
+                }
+            }
+        }
+
+        return back()->with('success', "تم إنشاء تجميعة '{$modPack->title_en}' يدوياً بنجاح.");
+    }
+
+    /**
+     * AJAX: Get mods belonging to a specific game for mod selection UI.
+     */
+    public function getModsByGame(Request $request)
+    {
+        $request->validate([
+            'game_id' => 'required|exists:games,id',
+        ]);
+
+        $mods = Mod::where('game_id', $request->game_id)
+            ->select('id', 'name', 'slug', 'image_url', 'local_image_path')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'mods'    => $mods,
+        ]);
     }
 }

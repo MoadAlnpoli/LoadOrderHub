@@ -98,10 +98,15 @@
             <div class="absolute bottom-4 right-4 z-40 bg-black/60 px-2 py-1 rounded text-white text-xs font-bold pointer-events-none">After</div>
             <div class="absolute inset-0 z-30 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent pointer-events-none"></div>
         </div>
-    @elseif($mod->image_url)
-        <div class="relative rounded-2xl overflow-hidden aspect-[21/9] bg-slate-950 shadow-2xl border border-slate-800">
-            <img src="{{ $mod->image_url }}" alt="{{ $mod->name }}" class="w-full h-full object-cover">
+    @elseif($mod->local_image_path || $mod->image_url)
+        @php $displayImg = asset($mod->local_image_path ?: $mod->image_url); @endphp
+        <div onclick="openImageLightbox(['{{ $displayImg }}'])" class="relative rounded-2xl overflow-hidden aspect-[21/9] bg-slate-950 shadow-2xl border border-slate-800/80 cursor-pointer group hover-scale-img">
+            <img src="{{ $displayImg }}" alt="{{ $mod->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
             <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+            <div class="absolute top-4 right-4 z-10 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-xl text-xs text-white font-bold flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity border border-slate-800">
+                <i class="fa-solid fa-expand text-violet-400"></i>
+                <span>{{ app()->getLocale() == 'ar' ? 'تضخيم الصورة' : 'Expand Image' }}</span>
+            </div>
         </div>
     @endif
 
@@ -170,16 +175,8 @@
         </div>
     </div>
 
-    <!-- Sponsored AdSense Banner Ad (Leaderboard) -->
-    <div class="w-full text-center space-y-2 py-4">
-        <span class="text-[9px] text-slate-600 font-bold uppercase tracking-widest">{{ __('messages.ad_space') }}</span>
-        <div onclick="trackAdClick('mods_leaderboard_banner')" class="mx-auto max-w-4xl h-24 rounded-2xl border border-dashed border-slate-800 bg-slate-950/30 flex items-center justify-center text-xs text-slate-500 cursor-pointer hover:bg-slate-900/50 transition-colors">
-            <div class="flex items-center space-x-3 rtl:space-x-reverse">
-                <i class="fa-solid fa-rectangle-ad text-3xl text-slate-700"></i>
-                <span class="text-slate-400 font-medium">Google AdSense Leaderboard Banner<br><span class="text-[10px] text-slate-600">728x90 responsive advertisement banner</span></span>
-            </div>
-        </div>
-    </div>
+    <!-- Leaderboard Ad -->
+    <x-ad-slot type="leaderboard" class="py-4" />
 
     <!-- Layout Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-8" id="main-layout-grid">
@@ -269,16 +266,8 @@
                 }
             </script>
 
-            <!-- Sponsored Native Ad -->
-            <div class="w-full text-center space-y-2 py-2">
-                <span class="text-[9px] text-slate-650 font-bold uppercase tracking-widest block">{{ __('messages.ad_space') }}</span>
-                <div class="h-20 rounded-2xl border border-dashed border-slate-800 bg-slate-950/30 flex items-center justify-center text-xs text-slate-500">
-                    <div class="flex items-center space-x-3">
-                        <i class="fa-solid fa-rectangle-ad text-2xl text-slate-700"></i>
-                        <span class="text-slate-400 font-medium">In-Content Native Banner (468x60)</span>
-                    </div>
-                </div>
-            </div>
+            <!-- In-Content Ad -->
+            <x-ad-slot type="in_content" class="py-2" />
 
             <!-- Mod Packs Using This Mod -->
             <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden">
@@ -553,15 +542,9 @@
             </div>
             @endif
 
-            <!-- Sidebar Ad Slot -->
-            <div class="glass-card p-4 rounded-2xl border border-slate-800 text-center space-y-3 sticky top-24">
-                <span class="text-[9px] text-slate-650 font-bold uppercase tracking-widest block">{{ __('messages.ad_space') }}</span>
-                <div class="h-64 rounded-xl border border-slate-850 bg-slate-950/40 flex items-center justify-center text-xs text-slate-500 p-4">
-                    <div>
-                        <i class="fa-solid fa-rectangle-ad text-3xl mb-2 text-slate-700"></i>
-                        <p>Sidebar Banner Ad<br><span class="text-[10px] text-slate-600">300x250 responsive slot</span></p>
-                    </div>
-                </div>
+            <!-- Sidebar Ad -->
+            <div class="sticky top-24">
+                <x-ad-slot type="sidebar" />
             </div>
 
             <!-- Recommended Mods Card -->

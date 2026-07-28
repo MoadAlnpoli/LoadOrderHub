@@ -20,21 +20,31 @@ class GameController extends Controller
 
         // Calculate trending games based on total views of their modpacks
         $trendingGames = \Illuminate\Support\Facades\Cache::remember('home_trending_games', 3600, function () {
-            return Game::addSelect([
-                'total_views' => \App\Models\ModPack::selectRaw('COALESCE(SUM(mod_packs.views_count), 0)')
-                    ->join('game_version_mod_pack', 'mod_packs.id', '=', 'game_version_mod_pack.mod_pack_id')
-                    ->join('game_versions', 'game_version_mod_pack.game_version_id', '=', 'game_versions.id')
-                    ->whereColumn('game_versions.game_id', 'games.id')
-            ])
-            ->orderByDesc('total_views')
-            ->take(3)
-            ->get();
+            return Game::withCount('versions')
+                ->addSelect([
+                    'total_views' => \App\Models\ModPack::selectRaw('COALESCE(SUM(mod_packs.views_count), 0)')
+                        ->join('game_version_mod_pack', 'mod_packs.id', '=', 'game_version_mod_pack.mod_pack_id')
+                        ->join('game_versions', 'game_version_mod_pack.game_version_id', '=', 'game_versions.id')
+                        ->whereColumn('game_versions.game_id', 'games.id')
+                ])
+                ->orderByDesc('total_views')
+                ->take(3)
+                ->get();
         });
 
         $latestPacks = \Illuminate\Support\Facades\Cache::remember('home_latest_packs', 1800, function () {
             return \App\Models\ModPack::with(['gameVersions.game', 'creator'])
+                ->withCount('mods')
                 ->where('is_published', true)
                 ->latest()
+                ->take(6)
+                ->get();
+        });
+
+        $topMods = \Illuminate\Support\Facades\Cache::remember('home_top_mods', 1800, function () {
+            return \App\Models\Mod::with('game')
+                ->where('status', 'published')
+                ->orderByDesc('downloads_count')
                 ->take(6)
                 ->get();
         });
@@ -48,7 +58,7 @@ class GameController extends Controller
             ];
         });
 
-        return view('games.index', compact('games', 'trendingGames', 'latestPacks', 'globalStats'));
+        return view('games.index', compact('games', 'trendingGames', 'latestPacks', 'topMods', 'globalStats'));
     }
 
     /**

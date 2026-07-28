@@ -80,16 +80,9 @@
                 </div>
             </div>
             
-            <!-- Sticky Sidebar Ad Slot Placeholder -->
-            <div class="glass-card p-4 rounded-2xl border border-slate-800 text-center space-y-3 sticky top-24">
-                <div class="text-[10px] text-slate-600 font-bold uppercase tracking-widest">{{ __('messages.ad_space') }}</div>
-                <div class="h-64 rounded-xl border border-dashed border-slate-800 bg-slate-950/40 flex items-center justify-center text-xs text-slate-500 p-4">
-                    <!-- Google AdSense Container -->
-                    <div>
-                        <i class="fa-solid fa-rectangle-ad text-3xl mb-2 text-slate-700"></i>
-                        <p>AdSense Display Ad (Sidebar)<br><span class="text-[10px] text-slate-600">300x250 sticky banner</span></p>
-                    </div>
-                </div>
+            <!-- Sticky Sidebar Ad Slot -->
+            <div class="sticky top-24">
+                <x-ad-slot type="sidebar" />
             </div>
         </div>
 
