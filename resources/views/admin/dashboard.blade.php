@@ -86,7 +86,7 @@
                 <span class="text-xs">إدارة الإعلانات (Ads Management)</span>
             </a>
 
-            <a href="#" class="w-full text-right flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 border-transparent text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 font-bold">
+            <a href="{{ route('admin.review-queue') }}" class="w-full text-right flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 border-transparent text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 font-bold">
                 <div class="relative w-5 text-center">
                     <i class="fa-solid fa-flag text-rose-500"></i>
                     @if(isset($pendingReportsCount) && $pendingReportsCount > 3)
@@ -905,11 +905,11 @@
             </div>
         </div>
 
+        @include('admin.partials.settings')
+        @include('admin.partials.newsletter')
+
     </div>
 </div>
-
-@include('admin.partials.settings')
-@include('admin.partials.newsletter')
 
 {{-- Import Wizard Modal --}}
 <div id="import-wizard-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm z-50 hidden items-center justify-center p-4 overflow-y-auto">
@@ -941,7 +941,15 @@ function switchAdminTab(tabId) {
     const panel = document.getElementById('admin-panel-' + tabId);
     if (panel) panel.classList.remove('hidden');
     const btn = document.getElementById('admin-tab-btn-' + tabId);
-    if (btn) { btn.classList.add('bg-slate-900/50', 'border-violet-500/60', 'text-violet-400', 'font-bold'); btn.classList.remove('border-transparent', 'text-slate-400'); }
+    if (btn) { 
+        btn.classList.add('bg-slate-900/50', 'border-violet-500/60', 'text-violet-400', 'font-bold'); 
+        btn.classList.remove('border-transparent', 'text-slate-400'); 
+    }
+    if (history.replaceState) {
+        history.replaceState(null, null, '#' + tabId);
+    } else {
+        window.location.hash = tabId;
+    }
 }
 function toggleEditModal(id) {
     const m = document.getElementById('edit-modal-' + id);
@@ -1247,8 +1255,12 @@ function submitWizardForm(event) {
     .catch(e => { btn.disabled = false; btn.innerHTML = orig; alert('خطأ: ' + e.message); });
 }
 document.addEventListener('DOMContentLoaded', function() {
+    const hashTab = window.location.hash ? window.location.hash.replace('#', '') : null;
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('mods_page')) {
+    
+    if (hashTab && document.getElementById('admin-panel-' + hashTab)) {
+        switchAdminTab(hashTab);
+    } else if (urlParams.has('mods_page')) {
         switchAdminTab('mods');
     } else {
         switchAdminTab('metrics');
