@@ -25,6 +25,16 @@ class AppServiceProvider extends ServiceProvider
             $this->app['request']->server->set('HTTPS', 'on');
         }
 
+        // Gracefully fallback to sqlite if primary mysql host is unreachable / DNS fails
+        if (config('database.default') === 'mysql') {
+            try {
+                \Illuminate\Support\Facades\DB::connection('mysql')->getPdo();
+            } catch (\Throwable $e) {
+                config(['database.default' => 'sqlite']);
+                \Illuminate\Support\Facades\DB::purge();
+            }
+        }
+
         \Illuminate\Support\Facades\View::composer('*', function ($view) {
             try {
                 $globalAds = \App\Models\AdSlot::where('is_active', true)->get();
