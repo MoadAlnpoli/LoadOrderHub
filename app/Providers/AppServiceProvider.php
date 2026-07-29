@@ -53,7 +53,7 @@ class AppServiceProvider extends ServiceProvider
             }
         }
 
-        // Ensure main admin account exists in active database
+        // Ensure main admin account exists and auto-seed if database is empty
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('users')) {
                 $adm = \App\Models\User::firstOrCreate(
@@ -67,6 +67,10 @@ class AppServiceProvider extends ServiceProvider
                 if (!$adm->is_admin) {
                     $adm->update(['is_admin' => true]);
                 }
+            }
+
+            if (\Illuminate\Support\Facades\Schema::hasTable('games') && \App\Models\Game::count() === 0) {
+                \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
             }
         } catch (\Throwable $adminErr) {
             // Ignore
