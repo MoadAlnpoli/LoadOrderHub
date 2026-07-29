@@ -41,9 +41,9 @@ class AppServiceProvider extends ServiceProvider
                 ]);
                 \Illuminate\Support\Facades\DB::purge();
 
-                // Auto-migrate & seed sqlite database if users table is missing
+                // Auto-migrate & seed sqlite database if users table or ad_slots table is missing
                 try {
-                    if (!\Illuminate\Support\Facades\Schema::hasTable('users')) {
+                    if (!\Illuminate\Support\Facades\Schema::hasTable('users') || !\Illuminate\Support\Facades\Schema::hasTable('ad_slots')) {
                         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
                         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
                     }

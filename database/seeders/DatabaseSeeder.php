@@ -149,7 +149,23 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Ultra Quality RayTracing Optimizations', 'load_order' => 6, 'nexus_url' => 'https://www.nexusmods.com/cyberpunk2077/mods/10490'],
         ];
         foreach ($mods3 as $m) {
-            Mod::create(array_merge($m, ['mod_pack_id' => $pack3->id]));
+            Mod::firstOrCreate(['mod_pack_id' => $pack3->id, 'name' => $m['name']], $m);
+        }
+
+        // 6. Populate Default Ad Slots
+        if (\Illuminate\Support\Facades\Schema::hasTable('ad_slots')) {
+            \App\Models\AdSlot::firstOrCreate(
+                ['name' => 'الصفحة الرئيسية - أعلى المبنى'],
+                ['impressions' => 0, 'clicks' => 0, 'is_active' => true]
+            );
+            \App\Models\AdSlot::firstOrCreate(
+                ['name' => 'مستكشف المودات - الشريط الجانبي'],
+                ['impressions' => 0, 'clicks' => 0, 'is_active' => true]
+            );
+            \App\Models\AdSlot::firstOrCreate(
+                ['name' => 'تفاصيل المود - أسفل الرابط'],
+                ['impressions' => 0, 'clicks' => 0, 'is_active' => true]
+            );
         }
     }
 }

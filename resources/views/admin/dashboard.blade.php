@@ -338,7 +338,9 @@
 
             {{-- ── Ad Performance Panel ─────────────────────────────────── --}}
             @php
-                $adStats = \App\Models\AdSlot::select('id','name','impressions','clicks','is_active')->get();
+                $adStats = \Illuminate\Support\Facades\Schema::hasTable('ad_slots') 
+                    ? \App\Models\AdSlot::select('id','name','impressions','clicks','is_active')->get() 
+                    : collect();
             @endphp
             @if($adStats->count())
             <div class="glass-card rounded-2xl border border-slate-800 p-6 space-y-4">
