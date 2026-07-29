@@ -126,7 +126,7 @@ Route::middleware('auth')->group(function () {
 
 // --- Admin Panel Routes ---
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/{tab?}', [AdminController::class, 'dashboard'])->where('tab', 'metrics|games|modpacks|mods|users|comments|ai-hub|conflicts-metrics|extraction-logs|settings|newsletter')->name('dashboard');
     Route::post('/enrich-mods', [AdminController::class, 'enrichMods'])->name('enrich');
     Route::post('/trigger-scraper', [AdminController::class, 'triggerScraper'])->name('scraper');
     Route::post('/fix-missing-images', [AdminController::class, 'fixMissingImages'])->name('fix-missing-images');

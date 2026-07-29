@@ -23,9 +23,11 @@ class AdminController extends Controller
     /**
      * Display the admin dashboard with general data lists and search capabilities.
      */
-    public function dashboard(Request $request)
+    public function dashboard(Request $request, $tab = 'metrics')
     {
         $search = $request->get('search', '');
+        $allowedTabs = ['metrics', 'games', 'modpacks', 'mods', 'users', 'comments', 'ai-hub', 'conflicts-metrics', 'extraction-logs', 'settings', 'newsletter'];
+        $activeTab = in_array($tab, $allowedTabs) ? $tab : 'metrics';
 
         // Query collections with search filtering if present
         if (!empty($search)) {
@@ -101,14 +103,19 @@ class AdminController extends Controller
             ? \App\Models\ExtractionLog::latest()->take(50)->get()
             : collect();
 
-        $pendingReportsCount = \Schema::hasTable('mod_reports')
-            ? \App\Models\ModReport::where('status', 'pending')->count()
-            : 0;
+        $pendingReportsCount = 0;
+        try {
+            if (\Schema::hasTable('mod_reports')) {
+                $pendingReportsCount = \App\Models\ModReport::whereIn('status', ['pending', 'active'])->count();
+            }
+        } catch (\Throwable $e) {
+            $pendingReportsCount = 0;
+        }
 
         // Auto-fix: download external thumbnails to local storage for reliability
         $this->fixExternalThumbnails($games);
 
-        return view('admin.dashboard', compact('games', 'modPacks', 'users', 'comments', 'metrics', 'search', 'modsList', 'mostConflictedMods', 'extractionLogs', 'pendingReportsCount'));
+        return view('admin.dashboard', compact('games', 'modPacks', 'users', 'comments', 'metrics', 'search', 'modsList', 'mostConflictedMods', 'extractionLogs', 'pendingReportsCount', 'activeTab'));
     }
 
     /**

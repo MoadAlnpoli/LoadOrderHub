@@ -10,71 +10,71 @@
         <div class="glass-card rounded-2xl border border-slate-800 p-4 lg:sticky lg:top-24 space-y-3">
             <h3 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider px-2 mb-1">القائمة الرئيسية</h3>
 
-            <button onclick="switchAdminTab('metrics')" id="admin-tab-btn-metrics"
+            <a href="{{ route('admin.dashboard', ['tab' => 'metrics']) }}" onclick="switchAdminTab('metrics'); return false;" id="admin-tab-btn-metrics"
                 class="admin-sidebar-btn w-full text-right flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 bg-slate-900/50 border-violet-500/60 text-violet-400 font-bold">
                 <i class="fa-solid fa-chart-pie w-5 text-center"></i>
                 <span class="text-xs">الإحصائيات العامة</span>
-            </button>
+            </a>
 
-            <button onclick="switchAdminTab('games')" id="admin-tab-btn-games"
+            <a href="{{ route('admin.dashboard', ['tab' => 'games']) }}" onclick="switchAdminTab('games'); return false;" id="admin-tab-btn-games"
                 class="admin-sidebar-btn w-full text-right flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 border-transparent text-slate-400 hover:bg-slate-800/60 hover:text-white">
                 <i class="fa-solid fa-gamepad w-5 text-center"></i>
                 <span class="text-xs">إدارة الألعاب وتحديثاتها</span>
-            </button>
+            </a>
 
-            <button onclick="switchAdminTab('modpacks')" id="admin-tab-btn-modpacks"
+            <a href="{{ route('admin.dashboard', ['tab' => 'modpacks']) }}" onclick="switchAdminTab('modpacks'); return false;" id="admin-tab-btn-modpacks"
                 class="admin-sidebar-btn w-full text-right flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 border-transparent text-slate-400 hover:bg-slate-800/60 hover:text-white">
                 <i class="fa-solid fa-boxes-stacked w-5 text-center"></i>
                 <span class="text-xs">إدارة التجميعات (ModPacks)</span>
-            </button>
+            </a>
 
-            <button onclick="switchAdminTab('mods')" id="admin-tab-btn-mods"
+            <a href="{{ route('admin.dashboard', ['tab' => 'mods']) }}" onclick="switchAdminTab('mods'); return false;" id="admin-tab-btn-mods"
                 class="admin-sidebar-btn w-full text-right flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 border-transparent text-slate-400 hover:bg-slate-800/60 hover:text-white">
                 <i class="fa-solid fa-cube w-5 text-center"></i>
                 <span class="text-xs">إدارة المودات والمكتبة</span>
-            </button>
+            </a>
 
-            <button onclick="switchAdminTab('users')" id="admin-tab-btn-users"
+            <a href="{{ route('admin.dashboard', ['tab' => 'users']) }}" onclick="switchAdminTab('users'); return false;" id="admin-tab-btn-users"
                 class="admin-sidebar-btn w-full text-right flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 border-transparent text-slate-400 hover:bg-slate-800/60 hover:text-white">
                 <i class="fa-solid fa-users w-5 text-center"></i>
                 <span class="text-xs">إدارة الأعضاء (Users)</span>
-            </button>
+            </a>
 
-            <button onclick="switchAdminTab('comments')" id="admin-tab-btn-comments"
+            <a href="{{ route('admin.dashboard', ['tab' => 'comments']) }}" onclick="switchAdminTab('comments'); return false;" id="admin-tab-btn-comments"
                 class="admin-sidebar-btn w-full text-right flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 border-transparent text-slate-400 hover:bg-slate-800/60 hover:text-white">
                 <i class="fa-solid fa-comments w-5 text-center"></i>
                 <span class="text-xs">إدارة التعليقات والتقييمات</span>
-            </button>
+            </a>
 
-            <button onclick="switchAdminTab('ai-hub')" id="admin-tab-btn-ai-hub"
+            <a href="{{ route('admin.dashboard', ['tab' => 'ai-hub']) }}" onclick="switchAdminTab('ai-hub'); return false;" id="admin-tab-btn-ai-hub"
                 class="admin-sidebar-btn w-full text-right flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 border-transparent text-slate-400 hover:bg-slate-800/60 hover:text-white">
                 <i class="fa-solid fa-robot w-5 text-center"></i>
                 <span class="text-xs">مركز الأتمتة والذكاء الاصطناعي</span>
-            </button>
+            </a>
 
-            <button onclick="switchAdminTab('conflicts-metrics')" id="admin-tab-btn-conflicts-metrics"
+            <a href="{{ route('admin.dashboard', ['tab' => 'conflicts-metrics']) }}" onclick="switchAdminTab('conflicts-metrics'); return false;" id="admin-tab-btn-conflicts-metrics"
                 class="admin-sidebar-btn w-full text-right flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 border-transparent text-slate-400 hover:bg-slate-800/60 hover:text-white">
                 <i class="fa-solid fa-triangle-exclamation w-5 text-center text-amber-500"></i>
                 <span class="text-xs">إحصائيات التعارضات</span>
-            </button>
+            </a>
 
-            <button onclick="switchAdminTab('extraction-logs')" id="admin-tab-btn-extraction-logs"
+            <a href="{{ route('admin.dashboard', ['tab' => 'extraction-logs']) }}" onclick="switchAdminTab('extraction-logs'); return false;" id="admin-tab-btn-extraction-logs"
                 class="admin-sidebar-btn w-full text-right flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 border-transparent text-slate-400 hover:bg-slate-800/60 hover:text-white">
                 <i class="fa-solid fa-list-check w-5 text-center text-blue-500"></i>
                 <span class="text-xs">سجل استخراج المودات</span>
-            </button>
+            </a>
 
-            <button onclick="switchAdminTab('settings')" id="admin-tab-btn-settings"
+            <a href="{{ route('admin.dashboard', ['tab' => 'settings']) }}" onclick="switchAdminTab('settings'); return false;" id="admin-tab-btn-settings"
                 class="admin-sidebar-btn w-full text-right flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 border-transparent text-slate-400 hover:bg-slate-800/60 hover:text-white">
                 <i class="fa-solid fa-gear w-5 text-center text-slate-300"></i>
                 <span class="text-xs">إعدادات الموقع (Settings)</span>
-            </button>
+            </a>
 
-            <button onclick="switchAdminTab('newsletter')" id="admin-tab-btn-newsletter"
+            <a href="{{ route('admin.dashboard', ['tab' => 'newsletter']) }}" onclick="switchAdminTab('newsletter'); return false;" id="admin-tab-btn-newsletter"
                 class="admin-sidebar-btn w-full text-right flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 border-transparent text-slate-400 hover:bg-slate-800/60 hover:text-white">
                 <i class="fa-solid fa-envelope-open-text w-5 text-center text-teal-400"></i>
                 <span class="text-xs">القائمة البريدية (Newsletter)</span>
-            </button>
+            </a>
 
             <a href="{{ route('admin.review-queue') }}" class="w-full text-right flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 border-transparent text-amber-400 hover:bg-slate-800/60 hover:text-amber-300 font-bold">
                 <i class="fa-solid fa-list-check w-5 text-center"></i>
@@ -1253,6 +1253,7 @@ function submitWizardForm(event) {
     .catch(e => { btn.disabled = false; btn.innerHTML = orig; alert('خطأ: ' + e.message); });
 }
 document.addEventListener('DOMContentLoaded', function() {
+    const activeTabFromBackend = '{{ $activeTab ?? "metrics" }}';
     const hashTab = window.location.hash ? window.location.hash.replace('#', '') : null;
     const urlParams = new URLSearchParams(window.location.search);
     
@@ -1260,6 +1261,8 @@ document.addEventListener('DOMContentLoaded', function() {
         switchAdminTab(hashTab);
     } else if (urlParams.has('mods_page')) {
         switchAdminTab('mods');
+    } else if (activeTabFromBackend && document.getElementById('admin-panel-' + activeTabFromBackend)) {
+        switchAdminTab(activeTabFromBackend);
     } else {
         switchAdminTab('metrics');
     }
