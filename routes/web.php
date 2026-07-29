@@ -126,7 +126,7 @@ Route::middleware('auth')->group(function () {
 
 // --- Admin Panel Routes ---
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/{tab?}', [AdminController::class, 'dashboard'])->where('tab', 'metrics|games|modpacks|mods|users|comments|ai-hub|conflicts-metrics|extraction-logs|settings|newsletter')->name('dashboard');
+    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::post('/enrich-mods', [AdminController::class, 'enrichMods'])->name('enrich');
     Route::post('/trigger-scraper', [AdminController::class, 'triggerScraper'])->name('scraper');
     Route::post('/fix-missing-images', [AdminController::class, 'fixMissingImages'])->name('fix-missing-images');
@@ -211,6 +211,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/mods/manual', [AdminController::class, 'storeManualMod'])->name('mods.store-manual');
     Route::post('/modpacks/manual', [AdminController::class, 'storeManualModPack'])->name('modpacks.store-manual');
     Route::get('/api/mods-by-game', [AdminController::class, 'getModsByGame'])->name('api.mods-by-game');
+    Route::get('/{tab}', [AdminController::class, 'dashboard'])->where('tab', 'metrics|games|modpacks|mods|users|comments|ai-hub|conflicts-metrics|extraction-logs|settings|newsletter')->name('dashboard.tab');
 });
 
 // Mod comparison route (public)

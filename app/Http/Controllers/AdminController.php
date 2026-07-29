@@ -936,128 +936,149 @@ class AdminController extends Controller
      */
     public function extractMetadata(Request $request)
     {
-        $request->validate([
-            'video_id' => 'required|string',
-            'game_id' => 'required|exists:games,id',
-        ]);
-
-        $videoId = $request->video_id;
-        $game = Game::findOrFail($request->game_id);
-
-        $transcriptFetched = false;
-        $failureReason = null;
-        $isValidJson = false;
-        $totalModsExtracted = 0;
-        $lowConfidenceCount = 0;
-        $videoTitle = '';
-
         try {
-            $youtube = new YoutubeService();
-            $details = $youtube->getVideoDetails($videoId);
-            $videoTitle = $details['title'] ?? '';
+            $request->validate([
+                'video_id' => 'required|string',
+                'game_id' => 'required|exists:games,id',
+            ]);
 
-            $transcriptFetched = $details['has_transcript'] ?? false;
-            $failureReason = $details['transcript_failure_reason'] ?? null;
+            $videoId = $request->video_id;
+            $game = Game::findOrFail($request->game_id);
 
-            $ai = new AiProcessorService();
-            $extracted = $ai->processVideoData($details['title'], $details['description'], $details['transcript']);
+            $transcriptFetched = false;
+            $failureReason = null;
+            $isValidJson = false;
+            $totalModsExtracted = 0;
+            $lowConfidenceCount = 0;
+            $videoTitle = '';
+            $details = [];
+
+            try {
+                $youtube = new YoutubeService();
+                $details = $youtube->getVideoDetails($videoId);
+                $videoTitle = $details['title'] ?? '';
+
+                $transcriptFetched = $details['has_transcript'] ?? false;
+                $failureReason = $details['transcript_failure_reason'] ?? null;
+            } catch (\Throwable $ytErr) {
+                $details = [
+                    'title' => 'YouTube Video (' . $videoId . ')',
+                    'description' => '',
+                    'transcript' => '',
+                    'thumbnail_url' => "https://img.youtube.com/vi/{$videoId}/maxresdefault.jpg",
+                    'has_transcript' => false,
+                ];
+                $videoTitle = $details['title'];
+            }
+
+            $extracted = [];
+            try {
+                $ai = new AiProcessorService();
+                $extracted = $ai->processVideoData($details['title'], $details['description'] ?? '', $details['transcript'] ?? '');
+            } catch (\Throwable $aiErr) {
+                $extracted = [
+                    'title_en' => $videoTitle,
+                    'title_ar' => $videoTitle,
+                    'description_en' => '',
+                    'description_ar' => '',
+                    'game_version' => 'unknown',
+                    'game_versions' => [],
+                    'mods' => [],
+                ];
+            }
 
             $modsList = [];
-            if (!empty($extracted)) {
+            if (!empty($extracted) && !empty($extracted['mods']) && is_array($extracted['mods'])) {
                 $isValidJson = true;
 
-                if (!empty($extracted['mods']) && is_array($extracted['mods'])) {
-                    // Force confidence low if no transcript
-                    if (!$transcriptFetched) {
-                        foreach ($extracted['mods'] as &$m) {
-                            $m['confidence'] = 'low';
-                        }
-                        unset($m);
+                if (!$transcriptFetched) {
+                    foreach ($extracted['mods'] as &$m) {
+                        $m['confidence'] = 'low';
                     }
+                    unset($m);
+                }
 
-                    $totalModsExtracted = count($extracted['mods']);
+                $totalModsExtracted = count($extracted['mods']);
 
-                    foreach ($extracted['mods'] as $index => $m) {
-                        $modName = $m['name'];
-                        if (strtolower($m['confidence'] ?? '') === 'low') {
-                            $lowConfidenceCount++;
-                        }
-                        
-                        // Search using NexusSearchService
+                foreach ($extracted['mods'] as $index => $m) {
+                    $modName = $m['name'] ?? ('Mod ' . ($index + 1));
+                    if (strtolower($m['confidence'] ?? '') === 'low') {
+                        $lowConfidenceCount++;
+                    }
+                    
+                    $searchResults = [];
+                    try {
                         $searchResults = \App\Services\NexusSearchService::searchMod($game->slug, $modName);
-                        
-                        if (!empty($searchResults)) {
-                            $topMatch = $searchResults[0];
-                            $modsList[] = [
-                                'extracted_name' => $modName,
-                                'nexus_name' => $topMatch['title'],
-                                'nexus_url' => $topMatch['url'],
-                                'load_order' => $m['load_order'] ?? ($index + 1),
-                                'steam_url' => $m['steam_url'] ?? null,
-                                'download_url' => $m['download_url'] ?? null,
-                                'image_url' => null, // Loaded asynchronously on client side
-                                'confidence' => $m['confidence'] ?? 'high',
-                                'source_snippet' => $m['source_snippet'] ?? null,
-                            ];
-                        } else {
-                            $modsList[] = [
-                                'extracted_name' => $modName,
-                                'nexus_name' => $modName,
-                                'nexus_url' => null,
-                                'load_order' => $m['load_order'] ?? ($index + 1),
-                                'steam_url' => $m['steam_url'] ?? null,
-                                'download_url' => $m['download_url'] ?? null,
-                                'image_url' => null,
-                                'confidence' => $m['confidence'] ?? 'high',
-                                'source_snippet' => $m['source_snippet'] ?? null,
-                            ];
-                        }
+                    } catch (\Throwable $srchErr) {
+                        $searchResults = [];
+                    }
+                    
+                    if (!empty($searchResults)) {
+                        $topMatch = $searchResults[0];
+                        $modsList[] = [
+                            'extracted_name' => $modName,
+                            'nexus_name' => $topMatch['title'] ?? $modName,
+                            'nexus_url' => $topMatch['url'] ?? null,
+                            'load_order' => $m['load_order'] ?? ($index + 1),
+                            'steam_url' => $m['steam_url'] ?? null,
+                            'download_url' => $m['download_url'] ?? null,
+                            'image_url' => null,
+                            'confidence' => $m['confidence'] ?? 'high',
+                            'source_snippet' => $m['source_snippet'] ?? null,
+                        ];
+                    } else {
+                        $modsList[] = [
+                            'extracted_name' => $modName,
+                            'nexus_name' => $modName,
+                            'nexus_url' => null,
+                            'load_order' => $m['load_order'] ?? ($index + 1),
+                            'steam_url' => $m['steam_url'] ?? null,
+                            'download_url' => $m['download_url'] ?? null,
+                            'image_url' => null,
+                            'confidence' => $m['confidence'] ?? 'high',
+                            'source_snippet' => $m['source_snippet'] ?? null,
+                        ];
                     }
                 }
             }
 
-            // Save log
-            \App\Models\ExtractionLog::create([
-                'video_id' => $videoId,
-                'title' => $videoTitle ?: $videoId,
-                'transcript_fetched' => $transcriptFetched,
-                'failure_reason' => $failureReason,
-                'is_valid_json' => $isValidJson,
-                'total_mods_extracted' => $totalModsExtracted,
-                'low_confidence_count' => $lowConfidenceCount,
-            ]);
+            // Save log safely
+            try {
+                if (\Schema::hasTable('extraction_logs')) {
+                    \App\Models\ExtractionLog::create([
+                        'video_id' => $videoId,
+                        'title' => $videoTitle ?: $videoId,
+                        'transcript_fetched' => $transcriptFetched,
+                        'failure_reason' => $failureReason,
+                        'is_valid_json' => $isValidJson,
+                        'total_mods_extracted' => $totalModsExtracted,
+                        'low_confidence_count' => $lowConfidenceCount,
+                    ]);
+                }
+            } catch (\Throwable $logErr) {
+                // Ignore log save errors
+            }
 
             return response()->json($this->cleanUtf8([
                 'success' => true,
                 'video' => [
                     'video_id' => $videoId,
                     'title' => $videoTitle,
-                    'thumbnail_url' => $details['thumbnail_url'],
+                    'thumbnail_url' => $details['thumbnail_url'] ?? "https://img.youtube.com/vi/{$videoId}/maxresdefault.jpg",
                 ],
-                'title_en' => $extracted['title_en'] ?? '',
-                'title_ar' => $extracted['title_ar'] ?? '',
+                'title_en' => $extracted['title_en'] ?? $videoTitle,
+                'title_ar' => $extracted['title_ar'] ?? $videoTitle,
                 'description_en' => $extracted['description_en'] ?? '',
                 'description_ar' => $extracted['description_ar'] ?? '',
                 'game_version' => $extracted['game_version'] ?? 'unknown',
                 'game_versions' => $extracted['game_versions'] ?? [],
                 'mods' => $modsList,
             ]));
-        } catch (\Exception $e) {
-            // Save log on failure
-            \App\Models\ExtractionLog::create([
-                'video_id' => $videoId,
-                'title' => $videoTitle ?: $videoId,
-                'transcript_fetched' => $transcriptFetched,
-                'failure_reason' => $failureReason ?: $e->getMessage(),
-                'is_valid_json' => $isValidJson,
-                'total_mods_extracted' => $totalModsExtracted,
-                'low_confidence_count' => $lowConfidenceCount,
-            ]);
-
+        } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
-                'error' => $e->getMessage()
-            ], 500);
+                'error' => 'تعذر استخراج بيانات الفيديو: ' . $e->getMessage()
+            ], 200);
         }
     }
 

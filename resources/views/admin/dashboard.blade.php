@@ -1169,7 +1169,15 @@ function openImportWizard(videoId, gameId) {
     document.getElementById('wizard-video-id').value = videoId; document.getElementById('wizard-game-id').value = gameId;
     const vSel = document.getElementById('wizard-version-select'); vSel.innerHTML = '<option value="auto">تعرف تلقائي</option>';
     activeGameVersions.forEach(v => { vSel.insertAdjacentHTML('beforeend', `<option value="${v.id}">نسخة ${v.version}</option>`); });
-    fetch(`/admin/ai/extract-metadata?video_id=${videoId}&game_id=${gameId}`).then(r => r.json()).then(data => {
+    fetch(`/admin/ai/extract-metadata?video_id=${videoId}&game_id=${gameId}`)
+        .then(r => {
+            const contentType = r.headers.get('content-type') || '';
+            if (!contentType.includes('application/json')) {
+                throw new Error('حدث خطأ في جلب بيانات استخراج الفيديو من السيرفر');
+            }
+            return r.json();
+        })
+        .then(data => {
         if (!data.success) { alert(data.error || 'فشل'); closeImportWizard(); return; }
         document.getElementById('wizard-loading-state').classList.add('hidden'); document.getElementById('wizard-form').classList.remove('hidden');
         document.getElementById('wizard-video-thumbnail').src = data.video.thumbnail_url;
