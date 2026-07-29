@@ -20,12 +20,15 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // 1. Create Main Admin Account
-        $admin = User::create([
-            'name' => 'Moad Admin',
-            'email' => 'moadnp@gmail.com',
-            'password' => bcrypt('moad1234'),
-            'is_admin' => true,
-        ]);
+        $admin = User::firstOrCreate(
+            ['email' => 'moadnp@gmail.com'],
+            [
+                'name' => 'Moad Admin',
+                'password' => bcrypt('moad1234'),
+                'is_admin' => true,
+            ]
+        );
+        $admin->update(['is_admin' => true]);
 
         // 2. Create Supported Games
         $skyrim = Game::create([

