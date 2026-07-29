@@ -37,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
                 config([
                     'database.default' => 'sqlite',
                     'database.connections.sqlite.database' => $sqlitePath,
+                    'session.driver' => 'file',
                 ]);
                 \Illuminate\Support\Facades\DB::purge();
             }
