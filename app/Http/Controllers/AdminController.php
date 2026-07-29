@@ -101,10 +101,14 @@ class AdminController extends Controller
             ? \App\Models\ExtractionLog::latest()->take(50)->get()
             : collect();
 
+        $pendingReportsCount = \Schema::hasTable('mod_reports')
+            ? \App\Models\ModReport::where('status', 'pending')->count()
+            : 0;
+
         // Auto-fix: download external thumbnails to local storage for reliability
         $this->fixExternalThumbnails($games);
 
-        return view('admin.dashboard', compact('games', 'modPacks', 'users', 'comments', 'metrics', 'search', 'modsList', 'mostConflictedMods', 'extractionLogs'));
+        return view('admin.dashboard', compact('games', 'modPacks', 'users', 'comments', 'metrics', 'search', 'modsList', 'mostConflictedMods', 'extractionLogs', 'pendingReportsCount'));
     }
 
     /**
