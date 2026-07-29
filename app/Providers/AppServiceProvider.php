@@ -40,6 +40,16 @@ class AppServiceProvider extends ServiceProvider
                     'session.driver' => 'file',
                 ]);
                 \Illuminate\Support\Facades\DB::purge();
+
+                // Auto-migrate & seed sqlite database if users table is missing
+                try {
+                    if (!\Illuminate\Support\Facades\Schema::hasTable('users')) {
+                        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+                        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+                    }
+                } catch (\Throwable $migErr) {
+                    // Ignore migration errors
+                }
             }
         }
 
