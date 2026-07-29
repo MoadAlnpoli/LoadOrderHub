@@ -30,7 +30,14 @@ class AppServiceProvider extends ServiceProvider
             try {
                 \Illuminate\Support\Facades\DB::connection('mysql')->getPdo();
             } catch (\Throwable $e) {
-                config(['database.default' => 'sqlite']);
+                $sqlitePath = database_path('database.sqlite');
+                if (!file_exists($sqlitePath)) {
+                    @touch($sqlitePath);
+                }
+                config([
+                    'database.default' => 'sqlite',
+                    'database.connections.sqlite.database' => $sqlitePath,
+                ]);
                 \Illuminate\Support\Facades\DB::purge();
             }
         }
