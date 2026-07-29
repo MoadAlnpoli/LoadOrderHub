@@ -14,49 +14,43 @@ class GameController extends Controller
      */
     public function index()
     {
-        $games = \Illuminate\Support\Facades\Cache::remember('home_games', 3600, function () {
-            return Game::withCount('versions')->get();
-        });
+        // Flush stale homepage cache to guarantee instant real-time updates
+        \Illuminate\Support\Facades\Cache::forget('home_games');
+        \Illuminate\Support\Facades\Cache::forget('home_trending_games');
+        \Illuminate\Support\Facades\Cache::forget('home_latest_packs');
+        \Illuminate\Support\Facades\Cache::forget('home_top_mods');
+        \Illuminate\Support\Facades\Cache::forget('home_global_stats');
 
-        // Calculate trending games based on total views of their modpacks
-        $trendingGames = \Illuminate\Support\Facades\Cache::remember('home_trending_games', 3600, function () {
-            return Game::withCount('versions')
-                ->addSelect([
-                    'total_views' => \App\Models\ModPack::selectRaw('COALESCE(SUM(mod_packs.views_count), 0)')
-                        ->join('game_version_mod_pack', 'mod_packs.id', '=', 'game_version_mod_pack.mod_pack_id')
-                        ->join('game_versions', 'game_version_mod_pack.game_version_id', '=', 'game_versions.id')
-                        ->whereColumn('game_versions.game_id', 'games.id')
-                ])
-                ->orderByDesc('total_views')
-                ->take(3)
-                ->get();
-        });
+        $games = Game::withCount('versions')->get();
 
-        $latestPacks = \Illuminate\Support\Facades\Cache::remember('home_latest_packs', 1800, function () {
-            return \App\Models\ModPack::with(['gameVersions.game', 'creator'])
-                ->withCount('mods')
-                ->where('is_published', true)
-                ->latest()
-                ->take(6)
-                ->get();
-        });
+        $trendingGames = Game::withCount('versions')
+            ->addSelect([
+                'total_views' => \App\Models\ModPack::selectRaw('COALESCE(SUM(mod_packs.views_count), 0)')
+                    ->join('game_version_mod_pack', 'mod_packs.id', '=', 'game_version_mod_pack.mod_pack_id')
+                    ->join('game_versions', 'game_version_mod_pack.game_version_id', '=', 'game_versions.id')
+                    ->whereColumn('game_versions.game_id', 'games.id')
+            ])
+            ->orderByDesc('total_views')
+            ->take(6)
+            ->get();
 
-        $topMods = \Illuminate\Support\Facades\Cache::remember('home_top_mods', 1800, function () {
-            return \App\Models\Mod::with('game')
-                ->where('status', 'published')
-                ->orderByDesc('downloads_count')
-                ->take(6)
-                ->get();
-        });
+        $latestPacks = \App\Models\ModPack::with(['gameVersions.game', 'creator'])
+            ->withCount('mods')
+            ->latest()
+            ->take(6)
+            ->get();
 
-        $globalStats = \Illuminate\Support\Facades\Cache::remember('home_global_stats', 3600, function () {
-            return [
-                'mods' => \App\Models\Mod::count(),
-                'modpacks' => \App\Models\ModPack::count(),
-                'users' => \App\Models\User::count(),
-                'downloads' => \App\Models\Mod::sum('downloads_count') ?? 0,
-            ];
-        });
+        $topMods = \App\Models\Mod::with('game')
+            ->latest()
+            ->take(6)
+            ->get();
+
+        $globalStats = [
+            'mods' => \App\Models\Mod::count(),
+            'modpacks' => \App\Models\ModPack::count(),
+            'users' => \App\Models\User::count(),
+            'downloads' => \App\Models\Mod::sum('downloads_count') ?? 0,
+        ];
 
         return view('games.index', compact('games', 'trendingGames', 'latestPacks', 'topMods', 'globalStats'));
     }
