@@ -85,10 +85,8 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
 
-            if (\Illuminate\Support\Facades\Schema::hasTable('games')) {
-                if (\App\Models\Game::count() < 30 || (\Illuminate\Support\Facades\Schema::hasTable('mods') && \App\Models\Mod::count() < 2000)) {
-                    \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-                }
+            if (\Illuminate\Support\Facades\Schema::hasTable('games') && \App\Models\Game::count() === 0) {
+                \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
             }
         } catch (\Throwable $adminErr) {
             // Ignore
