@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
         );
         $admin->update(['is_admin' => true]);
 
-        // 2. Create 20 Popular Supported Games with Real Data & Steam Images
+        // 2. Create 35 Popular Supported Games with Real Data & Steam Images
         $gamesData = [
             ['slug' => 'skyrim-special-edition', 'name' => 'Skyrim Special Edition', 'description' => 'The legendary fantasy masterpiece from Bethesda Game Studios.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/489830/header.jpg'],
             ['slug' => 'mount-and-blade-ii-bannerlord', 'name' => 'Mount & Blade II: Bannerlord', 'description' => 'A strategy/action RPG that lets you lead armies and build empires.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/261550/header.jpg'],
@@ -52,18 +52,34 @@ class DatabaseSeeder extends Seeder
             ['slug' => 'dark-souls-iii', 'name' => 'DARK SOULS III', 'description' => 'Dark Souls continues to push the boundaries with the latest, ambitious chapter in the critically-acclaimed series.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/374320/header.jpg'],
             ['slug' => 'dragons-dogma-2', 'name' => 'Dragon\'s Dogma 2', 'description' => 'Dragon\'s Dogma 2 is a single player, narrative driven action-RPG.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2054970/header.jpg'],
             ['slug' => 'star-wars-jedi-survivor', 'name' => 'STAR WARS Jedi: Survivor', 'description' => 'The story of Cal Kestis continues in Star Wars Jedi: Survivor.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1770590/header.jpg'],
+            ['slug' => 'palworld', 'name' => 'Palworld', 'description' => 'Fight, farm, build and work alongside mysterious creatures called Pals in this multiplayer survival game.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1623730/header.jpg'],
+            ['slug' => 'helldivers-2', 'name' => 'HELLDIVERS 2', 'description' => 'The Galaxy’s Last Line of Offence. Enlist in the Helldivers and join the fight for Freedom across a hostile galaxy.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/553850/header.jpg'],
+            ['slug' => 'resident-evil-4-remake', 'name' => 'Resident Evil 4 Remake', 'description' => 'Survival is only the beginning. Leon S. Kennedy faces the horrors of a remote Spanish village.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2050650/header.jpg'],
+            ['slug' => 'fallout-3', 'name' => 'Fallout 3: Game of the Year Edition', 'description' => 'Prepare for the future with Vault-Tec in the Capital Wasteland.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/22370/header.jpg'],
+            ['slug' => 'mass-effect-legendary-edition', 'name' => 'Mass Effect Legendary Edition', 'description' => 'Relive the cinematic saga of Commander Shepard in the highly-acclaimed Mass Effect trilogy.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1328670/header.jpg'],
+            ['slug' => 'resident-evil-village', 'name' => 'Resident Evil Village', 'description' => 'Experience survival horror like never before in the eighth major installment in the Resident Evil franchise.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1196590/header.jpg'],
+            ['slug' => 'cities-skylines-ii', 'name' => 'Cities: Skylines II', 'description' => 'Raise a city from the ground up and transform it into a thriving metropolis in the most realistic city builder ever.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/949230/header.jpg'],
+            ['slug' => 'manor-lords', 'name' => 'Manor Lords', 'description' => 'Manor Lords is a medieval strategy game featuring in-depth city building, tactical battles, and complex economic sims.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1363080/header.jpg'],
+            ['slug' => 'armored-core-vi', 'name' => 'ARMORED CORE VI FIRES OF RUBICON', 'description' => 'Combine fast-paced 3D mech combat with deep customization in Armored Core VI.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1888160/header.jpg'],
+            ['slug' => 'the-sims-4', 'name' => 'The Sims 4', 'description' => 'Unleash your imagination and create a unique world of Sims that’s an expression of you.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1222670/header.jpg'],
+            ['slug' => 'civilization-vi', 'name' => 'Sid Meier’s Civilization VI', 'description' => 'Civilization VI offers new ways to interact with your world, expand your empire across the map, and advance your culture.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg'],
+            ['slug' => 'subnautica', 'name' => 'Subnautica', 'description' => 'Descend into the depths of an alien underwater world filled with wonder and peril.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/264710/header.jpg'],
+            ['slug' => 'terraria', 'name' => 'Terraria', 'description' => 'Dig, Fight, Explore, Build! Nothing is impossible in this action-packed adventure game.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/105600/header.jpg'],
+            ['slug' => 'sekiro-shadows-die-twice', 'name' => 'Sekiro: Shadows Die Twice', 'description' => 'Carve your own clever path to vengeance in the critically acclaimed adventure from FromSoftware.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/814380/header.jpg'],
+            ['slug' => 'persona-5-royal', 'name' => 'Persona 5 Royal', 'description' => 'Don the mask of Joker and join the Phantom Thieves of Hearts as they break the chains of modern society.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1687950/header.jpg'],
         ];
 
         $gameModels = [];
         foreach ($gamesData as $gData) {
             $gModel = Game::firstOrCreate(['slug' => $gData['slug']], $gData);
             $gameModels[] = $gModel;
-            // Version
-            GameVersion::firstOrCreate(['game_id' => $gModel->id, 'version' => '1.0']);
-            GameVersion::firstOrCreate(['game_id' => $gModel->id, 'version' => '1.5.0']);
+            // 3 Game Versions per game
+            GameVersion::firstOrCreate(['game_id' => $gModel->id, 'version' => '1.0.0']);
+            GameVersion::firstOrCreate(['game_id' => $gModel->id, 'version' => '1.2.5']);
+            GameVersion::firstOrCreate(['game_id' => $gModel->id, 'version' => '2.0.0']);
         }
 
-        // 3. Create Featured Mod Packs (1 per game = 20 ModPacks)
+        // 3. Create Featured Mod Packs (1 per game = 35 ModPacks)
         $modPackModels = [];
         foreach ($gameModels as $index => $gModel) {
             $pack = ModPack::firstOrCreate(
@@ -75,9 +91,9 @@ class DatabaseSeeder extends Seeder
                     'youtube_video_id' => 'dQw4w9WgXcQ',
                     'youtube_thumbnail_url' => $gModel->thumbnail,
                     'local_thumbnail_path' => null,
-                    'views_count' => rand(500, 10000),
-                    'upvotes' => rand(50, 900),
-                    'downvotes' => rand(0, 15),
+                    'views_count' => rand(800, 15000),
+                    'upvotes' => rand(100, 1200),
+                    'downvotes' => rand(0, 20),
                     'is_published' => true,
                     'created_by' => $admin->id,
                 ]
@@ -89,46 +105,50 @@ class DatabaseSeeder extends Seeder
             $modPackModels[$gModel->id] = $pack;
         }
 
-        // 4. Generate 1,000+ Curated Mods distributed across 20 Games
-        $modPrefixes = ['Ultimate', 'Enhanced', 'HD Re-texture', 'Script Extender', 'Performance Boost', '4K Textures', 'Realistic Weather', 'Overhaul Framework', 'Community Patch', 'Immersive Audio', 'Fast Travel Fix', 'Custom UI Interface', 'Advanced AI Engine', 'Lighting Overhaul', 'RayTracing Reshade', 'Next-Gen Combat', 'Expanded Inventory', 'Ultra Shadows', 'Expanded Magic & Spells', 'Dynamic Camera FX', 'Survival Realism', 'LOD Generator', 'FPS Unlocked', 'True Weather FX', 'Seamless Co-op Engine'];
+        // 4. Generate 100 Curated Mods per Game = 3,500 Mods Total
+        $modPrefixes = [
+            'Ultimate HD', 'Enhanced Visuals', 'HD Re-texture Pack', 'Script Extender Core', 'Performance Boost Pro', 
+            '4K Photorealistic Textures', 'Realistic Weather & Lighting', 'Overhaul Framework API', 'Community Patch 2026', 
+            'Immersive Audio Overhaul', 'Fast Travel & Map Utility', 'Custom Cyber UI Interface', 'Advanced Tactical AI', 
+            'RayTracing Ultra Reshade', 'Next-Gen Combat System', 'Expanded Storage & Inventory', 'Dynamic Shadows Fix', 
+            'Expanded Spells & Magic', 'Dynamic Camera FX', 'Hardcore Survival Realism', 'LOD Distance Generator', 
+            'FPS Unlocked Engine', 'True Weather FX', 'Seamless Co-op Engine', 'Better Animation Overhaul', 'Clean UI Redesign'
+        ];
         $modCategories = ['Graphics', 'Fixes', 'Gameplay', 'Audio', 'Interface', 'Framework', 'Combat', 'Quests', 'Weapons', 'Outfits'];
 
-        $totalModsCount = Mod::count();
-        if ($totalModsCount < 1000) {
-            foreach ($gameModels as $gModel) {
-                $pack = $modPackModels[$gModel->id] ?? null;
-                $gameVersionIds = $gModel->versions()->pluck('id')->toArray();
+        foreach ($gameModels as $gModel) {
+            $pack = $modPackModels[$gModel->id] ?? null;
+            $gameVersionIds = $gModel->versions()->pluck('id')->toArray();
 
-                for ($i = 1; $i <= 55; $i++) {
-                    $prefix = $modPrefixes[array_rand($modPrefixes)];
-                    $modName = "{$prefix} for {$gModel->name} Part {$i}";
-                    $category = $modCategories[array_rand($modCategories)];
+            for ($i = 1; $i <= 100; $i++) {
+                $prefix = $modPrefixes[array_rand($modPrefixes)];
+                $modName = "{$prefix} for {$gModel->name} Mod #{$i}";
+                $category = $modCategories[array_rand($modCategories)];
 
-                    $mod = Mod::firstOrCreate(
-                        [
-                            'game_id' => $gModel->id,
-                            'name'    => $modName,
-                        ],
-                        [
-                            'mod_pack_id'      => $pack?->id,
-                            'slug'             => Str::slug($modName) . '-' . rand(100, 9999),
-                            'description'      => "High performance {$category} modification for {$gModel->name}. Tested for maximum compatibility and zero crashes.",
-                            'author'           => 'Nexus Modder ' . rand(10, 99),
-                            'version'          => '1.' . rand(0, 9) . '.' . rand(0, 9),
-                            'load_order'       => $i,
-                            'nexus_url'        => "https://www.nexusmods.com/{$gModel->slug}/mods/" . rand(1000, 99999),
-                            'download_url'     => "https://www.nexusmods.com/{$gModel->slug}/mods/" . rand(1000, 99999),
-                            'image_url'        => $gModel->thumbnail,
-                            'status'           => 'published',
-                            'downloads_count'  => rand(500, 50000),
-                            'fps_impact'       => rand(0, 15),
-                            'is_verified'      => true,
-                        ]
-                    );
+                $mod = Mod::firstOrCreate(
+                    [
+                        'game_id' => $gModel->id,
+                        'name'    => $modName,
+                    ],
+                    [
+                        'mod_pack_id'      => $pack?->id,
+                        'slug'             => Str::slug($modName) . '-' . rand(100, 9999),
+                        'description'      => "High performance {$category} modification for {$gModel->name}. Tested for maximum stability, compatibility, and zero crashes.",
+                        'author'           => 'Nexus Creator ' . rand(10, 999),
+                        'version'          => '1.' . rand(0, 9) . '.' . rand(0, 9),
+                        'load_order'       => $i,
+                        'nexus_url'        => "https://www.nexusmods.com/{$gModel->slug}/mods/" . rand(1000, 99999),
+                        'download_url'     => "https://www.nexusmods.com/{$gModel->slug}/mods/" . rand(1000, 99999),
+                        'image_url'        => $gModel->thumbnail,
+                        'status'           => 'published',
+                        'downloads_count'  => rand(1000, 95000),
+                        'fps_impact'       => rand(0, 15),
+                        'is_verified'      => true,
+                    ]
+                );
 
-                    if (!empty($gameVersionIds)) {
-                        $mod->gameVersions()->syncWithoutDetaching($gameVersionIds);
-                    }
+                if (!empty($gameVersionIds)) {
+                    $mod->gameVersions()->syncWithoutDetaching($gameVersionIds);
                 }
             }
         }

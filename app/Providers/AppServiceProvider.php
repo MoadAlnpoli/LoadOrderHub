@@ -86,7 +86,7 @@ class AppServiceProvider extends ServiceProvider
             }
 
             if (\Illuminate\Support\Facades\Schema::hasTable('games')) {
-                if (\App\Models\Game::count() < 6 || (\Illuminate\Support\Facades\Schema::hasTable('mods') && \App\Models\Mod::count() < 15)) {
+                if (\App\Models\Game::count() < 30 || (\Illuminate\Support\Facades\Schema::hasTable('mods') && \App\Models\Mod::count() < 2000)) {
                     \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
                 }
             }
