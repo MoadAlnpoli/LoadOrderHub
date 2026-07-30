@@ -208,12 +208,28 @@ class Mod extends Model
     }
 
     /**
-     * Get the download source icon class.
+     * Get clean, guaranteed display image URL for front-end rendering.
      */
-    public function getSourceIconAttribute(): string
+    public function getDisplayImageAttribute(): string
     {
-        if ($this->steam_url) return 'fa-brands fa-steam';
-        if ($this->nexus_url) return 'fa-solid fa-download';
-        return 'fa-solid fa-link';
+        if (!empty($this->local_image_path)) {
+            $fullPath = public_path($this->local_image_path);
+            if (file_exists($fullPath)) {
+                return asset($this->local_image_path);
+            }
+            if (str_starts_with($this->local_image_path, 'storage/') || str_starts_with($this->local_image_path, 'images/')) {
+                return asset($this->local_image_path);
+            }
+        }
+
+        if (!empty($this->image_url)) {
+            return str_starts_with($this->image_url, 'http') ? $this->image_url : asset($this->image_url);
+        }
+
+        if ($this->relationLoaded('game') && $this->game && !empty($this->game->thumbnail)) {
+            return str_starts_with($this->game->thumbnail, 'http') ? $this->game->thumbnail : asset($this->game->thumbnail);
+        }
+
+        return asset('images/logo.png');
     }
 }

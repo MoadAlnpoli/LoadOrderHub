@@ -95,14 +95,8 @@
             <div class="mod-card glass-card rounded-2xl border border-slate-800/80 hover:border-violet-600/40 p-5 space-y-4 flex flex-col justify-between transition-all duration-300 transform hover:-translate-y-1">
                 <div class="space-y-3">
                     <!-- Thumbnail/Image -->
-                    <div class="aspect-video w-full rounded-xl overflow-hidden bg-slate-950 border border-slate-800/60 relative skeleton">
-                        @if($mod->local_image_path || $mod->image_url)
-                            <img src="{{ $mod->local_image_path ?: $mod->image_url }}" alt="{{ $mod->name }}" onload="this.parentElement.classList.remove('skeleton')" class="w-full h-full object-cover">
-                        @else
-                            <div class="w-full h-full flex items-center justify-center text-slate-700 bg-slate-900/40">
-                                <i class="fa-solid fa-cube text-4xl"></i>
-                            </div>
-                        @endif
+                    <div class="aspect-video w-full rounded-xl overflow-hidden bg-slate-950 border border-slate-800/60 relative">
+                        <img src="{{ $mod->display_image }}" alt="{{ $mod->name }}" onerror="this.onerror=null; this.src='{{ asset('images/logo.png') }}';" class="w-full h-full object-cover">
                     </div>
 
                     <!-- Metadata -->

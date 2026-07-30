@@ -643,7 +643,7 @@
                             <tr class="mod-row hover:bg-slate-800/30 transition-colors" data-name="{{ strtolower($m->name) }}">
                                 <td class="px-5 py-3">
                                     <div class="w-10 h-10 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 flex items-center justify-center">
-                                        @if($m->local_image_path || $m->image_url)<img src="{{ $m->local_image_path ?: $m->image_url }}" class="w-full h-full object-cover">@else<i class="fa-solid fa-cube text-slate-600 text-sm"></i>@endif
+                                        <img src="{{ $m->display_image }}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='{{ asset('images/logo.png') }}';">
                                     </div>
                                 </td>
                                 <td class="px-5 py-3 font-bold text-white">

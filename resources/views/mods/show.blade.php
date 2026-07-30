@@ -98,10 +98,10 @@
             <div class="absolute bottom-4 right-4 z-40 bg-black/60 px-2 py-1 rounded text-white text-xs font-bold pointer-events-none">After</div>
             <div class="absolute inset-0 z-30 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent pointer-events-none"></div>
         </div>
-    @elseif($mod->local_image_path || $mod->image_url)
-        @php $displayImg = asset($mod->local_image_path ?: $mod->image_url); @endphp
+    @else
+        @php $displayImg = $mod->display_image; @endphp
         <div onclick="openImageLightbox(['{{ $displayImg }}'])" class="relative rounded-2xl overflow-hidden aspect-[21/9] bg-slate-950 shadow-2xl border border-slate-800/80 cursor-pointer group hover-scale-img">
-            <img src="{{ $displayImg }}" alt="{{ $mod->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <img src="{{ $displayImg }}" alt="{{ $mod->name }}" onerror="this.onerror=null; this.src='{{ asset('images/logo.png') }}';" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
             <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
             <div class="absolute top-4 right-4 z-10 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-xl text-xs text-white font-bold flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity border border-slate-800">
                 <i class="fa-solid fa-expand text-violet-400"></i>

@@ -242,16 +242,54 @@ class DatabaseSeeder extends Seeder
         }
 
         $mods5 = [
-            ['name' => 'Fallout 4 Script Extender (F4SE)', 'load_order' => 1, 'nexus_url' => 'https://www.nexusmods.com/fallout4/mods/42147'],
-            ['name' => 'Sim Settlements 2', 'load_order' => 2, 'nexus_url' => 'https://www.nexusmods.com/fallout4/mods/47976'],
-            ['name' => 'Vivid Fallout - All in One', 'load_order' => 3, 'nexus_url' => 'https://www.nexusmods.com/fallout4/mods/25714'],
-            ['name' => 'True Storms - Wasteland Edition', 'load_order' => 4, 'nexus_url' => 'https://www.nexusmods.com/fallout4/mods/4472'],
+            ['name' => 'Fallout 4 Script Extender (F4SE)', 'load_order' => 1, 'nexus_url' => 'https://www.nexusmods.com/fallout4/mods/42147', 'image_url' => 'https://staticdelivery.nexusmods.com/mods/1151/images/headers/42147_header.jpg', 'description' => 'Essential script extension framework for Fallout 4 plugins.'],
+            ['name' => 'Sim Settlements 2', 'load_order' => 2, 'nexus_url' => 'https://www.nexusmods.com/fallout4/mods/47976', 'image_url' => 'https://staticdelivery.nexusmods.com/mods/1151/images/47976/47976-1603507020-1650395272.jpeg', 'description' => 'Complete overhaul of settlement building with NPC autonomy and storylines.'],
+            ['name' => 'Vivid Fallout - All in One', 'load_order' => 3, 'nexus_url' => 'https://www.nexusmods.com/fallout4/mods/25714', 'image_url' => 'https://staticdelivery.nexusmods.com/mods/1151/images/25714/25714-1501174984-754676140.jpeg', 'description' => 'Best-in-class HD texture replacement for landscapes, rocks, and buildings.'],
+            ['name' => 'True Storms - Wasteland Edition', 'load_order' => 4, 'nexus_url' => 'https://www.nexusmods.com/fallout4/mods/4472', 'image_url' => 'https://staticdelivery.nexusmods.com/mods/1151/images/4472-0-1449437190.jpg', 'description' => 'Complete weather overhaul with intense storms, rain, fog, and audio.'],
         ];
         foreach ($mods5 as $m) {
             Mod::firstOrCreate(['mod_pack_id' => $pack5->id, 'name' => $m['name']], array_merge($m, ['game_id' => $fallout4->id, 'downloads_count' => rand(100, 3500)]));
         }
 
-        // 6. Populate Default Ad Slots
+        // 6. Additional Games: Elden Ring & GTA V
+        $eldenRing = Game::firstOrCreate(
+            ['slug' => 'elden-ring'],
+            [
+                'name' => 'Elden Ring',
+                'description' => 'The action RPG fantasy epic created by FromSoftware and George R. R. Martin.',
+                'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg',
+            ]
+        );
+        $er_v1 = GameVersion::firstOrCreate(['game_id' => $eldenRing->id, 'version' => '1.10']);
+
+        $pack6 = ModPack::firstOrCreate(
+            ['title_en' => 'Elden Ring Reforged & Seamless Co-op Experience'],
+            [
+                'title_ar' => 'تجميعة إيلدن رينج للواقعية واللعب التعاوني السلس',
+                'description_en' => 'Seamless multiplayer co-op combined with expanded combat mechanics and balance overhauls.',
+                'description_ar' => 'طور لعب جماعي تعاوني بدون انقطاع مدمج مع تحسينات القتال والموازنة للعبة إيلدن رينج.',
+                'youtube_video_id' => 'dQw4w9WgXcQ',
+                'youtube_thumbnail_url' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg',
+                'local_thumbnail_path' => null,
+                'views_count' => 3200,
+                'upvotes' => 195,
+                'downvotes' => 4,
+                'is_published' => true,
+                'created_by' => $admin->id,
+            ]
+        );
+        $pack6->gameVersions()->sync([$er_v1->id]);
+
+        $mods6 = [
+            ['name' => 'Seamless Co-op', 'load_order' => 1, 'nexus_url' => 'https://www.nexusmods.com/eldenring/mods/510', 'image_url' => 'https://staticdelivery.nexusmods.com/mods/4333/images/510/510-1653655184-1845620857.png', 'description' => 'Play Elden Ring with friends throughout the entire game without disconnections.'],
+            ['name' => 'Elden Ring Reforged (ERR)', 'load_order' => 2, 'nexus_url' => 'https://www.nexusmods.com/eldenring/mods/541', 'image_url' => 'https://staticdelivery.nexusmods.com/mods/4333/images/541/541-1653942000-112345678.png', 'description' => 'Comprehensive overhaul of combat mechanics, deflection, and enemy AI.'],
+            ['name' => 'Mod Engine 2', 'load_order' => 3, 'nexus_url' => 'https://www.nexusmods.com/eldenring/mods/85', 'image_url' => 'https://staticdelivery.nexusmods.com/mods/4333/images/85/85-1647000000-999.png', 'description' => 'Mod injection framework for FromSoftware games.'],
+        ];
+        foreach ($mods6 as $m) {
+            Mod::firstOrCreate(['mod_pack_id' => $pack6->id, 'name' => $m['name']], array_merge($m, ['game_id' => $eldenRing->id, 'downloads_count' => rand(500, 8000)]));
+        }
+
+        // 7. Populate Default Ad Slots
         if (\Illuminate\Support\Facades\Schema::hasTable('ad_slots')) {
             \App\Models\AdSlot::firstOrCreate(
                 ['name' => 'الصفحة الرئيسية - أعلى المبنى'],

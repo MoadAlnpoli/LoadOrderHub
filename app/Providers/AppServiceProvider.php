@@ -20,6 +20,22 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Copy brand logo and favicon if present in brain artifacts
+        try {
+            $brandLogoSource = 'C:/Users/HP/.gemini/antigravity-ide/brain/2501c851-5dbf-4956-a848-35482d70502d/media__1785378010849.jpg';
+            if (file_exists($brandLogoSource)) {
+                $imgDir = public_path('images');
+                if (!file_exists($imgDir)) {
+                    @mkdir($imgDir, 0777, true);
+                }
+                @copy($brandLogoSource, public_path('images/logo.png'));
+                @copy($brandLogoSource, public_path('images/favicon.png'));
+                @copy($brandLogoSource, public_path('favicon.ico'));
+            }
+        } catch (\Throwable $logoErr) {
+            // Ignore
+        }
+
         if (config('app.env') === 'production' || app()->environment('production')) {
             URL::forceScheme('https');
             $this->app['request']->server->set('HTTPS', 'on');

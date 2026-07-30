@@ -1671,4 +1671,145 @@ class AdminController extends Controller
             'mods'    => $mods,
         ]);
     }
+
+    /**
+     * Import / Quick-Add a single mod by Nexus URL or direct link.
+     */
+    public function quickAddMod(Request $request)
+    {
+        $request->validate([
+            'nexus_url' => 'required|url|max:1000',
+            'game_id'   => 'required|exists:games,id',
+        ]);
+
+        $game = Game::findOrFail($request->game_id);
+        $url = trim($request->nexus_url);
+
+        $nexusModId = null;
+        $domainSlug = $game->slug;
+
+        if (preg_match('/nexusmods\.com\/([^\/]+)\/mods\/(\d+)/i', $url, $matches)) {
+            $domainSlug = $matches[1];
+            $nexusModId = (int)$matches[2];
+        }
+
+        $apiDetails = null;
+        if ($nexusModId) {
+            try {
+                $nexusService = app(\App\Services\NexusModsService::class);
+                $apiDetails = $nexusService->fetchModWithFullDetails($domainSlug, $nexusModId, $game);
+            } catch (\Throwable $e) {
+                // Fallback
+            }
+        }
+
+        $name = $apiDetails['name'] ?? null;
+        if (!$name) {
+            $parts = explode('/', rtrim($url, '/'));
+            $rawName = urldecode(end($parts));
+            $name = str_replace(['-', '_'], ' ', $rawName);
+            $name = ucwords(preg_replace('/[^a-zA-Z0-9\s]/', '', $name)) ?: ('Mod #' . ($nexusModId ?? rand(100, 999)));
+        }
+
+        $description = $apiDetails['description'] ?? "Extracted mod for {$game->name}.";
+        $author = $apiDetails['author'] ?? 'Nexus Creator';
+        $version = $apiDetails['version'] ?? '1.0';
+        $imageUrl = $apiDetails['picture_url'] ?? null;
+
+        $localImagePath = null;
+        if (!empty($imageUrl)) {
+            $localImagePath = \App\Services\ImageService::downloadAndSaveImage($imageUrl, 'mods');
+        }
+
+        $maxLoadOrder = Mod::where('game_id', $game->id)->max('load_order') ?? 0;
+
+        $mod = Mod::updateOrCreate(
+            [
+                'game_id'   => $game->id,
+                'nexus_url' => $url,
+            ],
+            [
+                'name'             => $name,
+                'slug'             => Str::slug($name) ?: ('mod-' . Str::random(6)),
+                'description'      => $description,
+                'author'           => $author,
+                'version'          => $version,
+                'load_order'       => $maxLoadOrder + 1,
+                'nexus_url'        => $url,
+                'download_url'     => $url,
+                'image_url'        => $imageUrl,
+                'local_image_path' => $localImagePath,
+                'nexus_mod_id'     => $nexusModId,
+                'status'           => 'published',
+            ]
+        );
+
+        $allVersionIds = $game->versions()->pluck('id')->toArray();
+        if (!empty($allVersionIds)) {
+            $mod->gameVersions()->syncWithoutDetaching($allVersionIds);
+        }
+
+        return back()->with('success', "تم استيراد وإضافة المود '{$mod->name}' بنجاح للعبة {$game->name}!");
+    }
+
+    /**
+     * Store a game manually.
+     */
+    public function storeGameManual(Request $request)
+    {
+        $request->validate([
+            'name'        => 'required|string|max:255',
+            'slug'        => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:5000',
+            'thumbnail'   => 'nullable|url|max:1000',
+            'image_file'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+        ]);
+
+        $slug = $request->slug ? Str::slug($request->slug) : Str::slug($request->name);
+
+        $thumbnail = $request->thumbnail;
+        if ($request->hasFile('image_file')) {
+            $file = $request->file('image_file');
+            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('games', $filename, 'public');
+            $thumbnail = 'storage/games/' . $filename;
+        }
+
+        $game = Game::create([
+            'name'        => $request->name,
+            'slug'        => $slug ?: ('game-' . Str::random(5)),
+            'description' => $request->description,
+            'thumbnail'   => $thumbnail ?: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/489830/header.jpg',
+        ]);
+
+        return back()->with('success', "تم إضافة اللعبة '{$game->name}' يدوياً بنجاح.");
+    }
+
+    /**
+     * Store a new game version.
+     */
+    public function storeGameVersion(Request $request)
+    {
+        $request->validate([
+            'game_id' => 'required|exists:games,id',
+            'version' => 'required|string|max:50',
+        ]);
+
+        $gv = GameVersion::firstOrCreate([
+            'game_id' => $request->game_id,
+            'version' => trim($request->version),
+        ]);
+
+        return back()->with('success', "تم إضافة الإصدار '{$gv->version}' للعبة بنجاح.");
+    }
+
+    /**
+     * Delete a game version.
+     */
+    public function deleteGameVersion(GameVersion $gameVersion)
+    {
+        $vName = $gameVersion->version;
+        $gameVersion->delete();
+        return back()->with('success', "تم حذف الإصدار '{$vName}' بنجاح.");
+    }
 }

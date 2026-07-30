@@ -7,6 +7,11 @@
 
     <title>@yield('title', __('messages.title')) - LoadOrderHub</title>
     
+    <!-- Favicon & Brand Icons -->
+    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo.png') }}">
+    
     <!-- Meta tags for SEO -->
     @hasSection('meta')
         @yield('meta')
@@ -102,13 +107,8 @@
                 
                 <!-- Logo & Games Dropdown -->
                 <div class="flex items-center gap-6">
-                    <a href="{{ route('home') }}" class="flex items-center gap-2.5 group shrink-0">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 via-indigo-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/25 group-hover:scale-105 transition-transform">
-                            <i class="fa-solid fa-gamepad text-white text-lg"></i>
-                        </div>
-                        <span class="text-xl font-extrabold bg-gradient-to-r from-white via-slate-200 to-violet-400 bg-clip-text text-transparent tracking-tight">
-                            LoadOrder<span class="text-violet-500">Hub</span>
-                        </span>
+                    <a href="{{ route('home') }}" class="flex items-center gap-3 group shrink-0">
+                        <img src="{{ asset('images/logo.png') }}" class="h-10 w-auto max-w-[160px] object-contain group-hover:scale-105 transition-transform" alt="LoadOrderHub Logo">
                     </a>
 
                     <!-- Games Dropdown (Desktop) -->
