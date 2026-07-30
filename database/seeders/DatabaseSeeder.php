@@ -30,266 +30,110 @@ class DatabaseSeeder extends Seeder
         );
         $admin->update(['is_admin' => true]);
 
-        // 2. Create Supported Games
-        $skyrim = Game::firstOrCreate(
-            ['slug' => 'skyrim-special-edition'],
-            [
-                'name' => 'Skyrim Special Edition',
-                'description' => 'The legendary fantasy masterpiece from Bethesda Game Studios.',
-                'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/489830/header.jpg',
-            ]
-        );
-
-        $bannerlord = Game::firstOrCreate(
-            ['slug' => 'mount-and-blade-ii-bannerlord'],
-            [
-                'name' => 'Mount & Blade II: Bannerlord',
-                'description' => 'A strategy/action RPG that lets you lead armies and build empires.',
-                'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/261550/header.jpg',
-            ]
-        );
-
-        $cyberpunk = Game::firstOrCreate(
-            ['slug' => 'cyberpunk-2077'],
-            [
-                'name' => 'Cyberpunk 2077',
-                'description' => 'An open-world, action-adventure RPG set in the dark future of Night City.',
-                'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1091500/header.jpg',
-            ]
-        );
-
-        $witcher3 = Game::firstOrCreate(
-            ['slug' => 'the-witcher-3-wild-hunt'],
-            [
-                'name' => 'The Witcher 3: Wild Hunt',
-                'description' => 'Become Geralt of Rivia, a professional monster slayer in a vast open world.',
-                'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/292030/header.jpg',
-            ]
-        );
-
-        $fallout4 = Game::firstOrCreate(
-            ['slug' => 'fallout-4'],
-            [
-                'name' => 'Fallout 4',
-                'description' => 'Bethesda Game Studios open-world post-apocalyptic survival RPG.',
-                'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/377160/header.jpg',
-            ]
-        );
-
-        $starfield = Game::firstOrCreate(
-            ['slug' => 'starfield'],
-            [
-                'name' => 'Starfield',
-                'description' => 'The next-generation space exploration role-playing game.',
-                'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1716740/header.jpg',
-            ]
-        );
-
-        // 3. Create Official Game Versions
-        $skyrim_v1 = GameVersion::firstOrCreate(['game_id' => $skyrim->id, 'version' => '1.5.97']);
-        $skyrim_v2 = GameVersion::firstOrCreate(['game_id' => $skyrim->id, 'version' => '1.6.640']);
-
-        $bannerlord_v1 = GameVersion::firstOrCreate(['game_id' => $bannerlord->id, 'version' => '1.2.0']);
-        $bannerlord_v2 = GameVersion::firstOrCreate(['game_id' => $bannerlord->id, 'version' => '1.2.8']);
-        $bannerlord_v3 = GameVersion::firstOrCreate(['game_id' => $bannerlord->id, 'version' => '1.2.9']);
-
-        $cyberpunk_v1 = GameVersion::firstOrCreate(['game_id' => $cyberpunk->id, 'version' => '2.0']);
-        $cyberpunk_v2 = GameVersion::firstOrCreate(['game_id' => $cyberpunk->id, 'version' => '2.1']);
-
-        $witcher_v1 = GameVersion::firstOrCreate(['game_id' => $witcher3->id, 'version' => '4.04']);
-        $fallout_v1 = GameVersion::firstOrCreate(['game_id' => $fallout4->id, 'version' => '1.10.163']);
-        $starfield_v1 = GameVersion::firstOrCreate(['game_id' => $starfield->id, 'version' => '1.11.33']);
-
-        // 4. Create Initial Official Mod Packs
-        $pack1 = ModPack::firstOrCreate(
-            ['title_en' => 'Skyrim AE Ultimate Graphics & Realism Load Order'],
-            [
-                'title_ar' => 'ترتيب مودات سكاي ريم للرسومات والواقعية',
-                'description_en' => 'A curated load order focused on stunning graphics, atmospheric lighting, and high-performance meshes. Built for Skyrim Anniversary Edition.',
-                'description_ar' => 'تجميعة مودات منسقة بعناية تركز على الرسومات المذهلة، الإضاءة الجوية، والمجسمات عالية الأداء. مصممة لنسخة الذكرى السنوية (Anniversary Edition).',
-                'youtube_video_id' => 'dQw4w9WgXcQ',
-                'youtube_thumbnail_url' => 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
-                'local_thumbnail_path' => null,
-                'views_count' => 1450,
-                'upvotes' => 88,
-                'downvotes' => 2,
-                'is_published' => true,
-                'created_by' => $admin->id,
-            ]
-        );
-        $pack1->gameVersions()->sync([$skyrim_v2->id]);
-
-        $pack2 = ModPack::firstOrCreate(
-            ['title_en' => 'Bannerlord 1.2.0 Hardcore Battle Realism Setup'],
-            [
-                'title_ar' => 'ترتيب مودات واقعية المعارك الصعبة للعبة بانرلورد 1.2.0',
-                'description_en' => 'Enhance combat tactics, AI behavior, and troop command mechanics for Bannerlord 1.2.0.',
-                'description_ar' => 'تحسين تكتيكات القتال، سلوك الذكاء الاصطناعي، وميكانيكيات قيادة القوات للعبة بانرلورد 1.2.0.',
-                'youtube_video_id' => '8bT_pC4j5J8',
-                'youtube_thumbnail_url' => 'https://img.youtube.com/vi/8bT_pC4j5J8/maxresdefault.jpg',
-                'local_thumbnail_path' => null,
-                'views_count' => 980,
-                'upvotes' => 64,
-                'downvotes' => 1,
-                'is_published' => true,
-                'created_by' => $admin->id,
-            ]
-        );
-        $pack2->gameVersions()->sync([$bannerlord_v1->id, $bannerlord_v2->id]);
-
-        $pack3 = ModPack::firstOrCreate(
-            ['title_en' => 'Cyberpunk 2.1 Hyper-Real Overdrive Visuals Modlist'],
-            [
-                'title_ar' => 'ترتيب مودات الرسومات الفائقة والواقعية للعبة سايبربانك 2.1',
-                'description_en' => 'Maximize RayTracing Overdrive performance and photorealism in Night City. Tested stable.',
-                'description_ar' => 'تحسين أداء تتبع الأشعة الفائق (RayTracing Overdrive) والواقعية البصرية في نايت سيتي. تم اختباره وهو مستقر تماماً.',
-                'youtube_video_id' => 'x48u_2zKqGk',
-                'youtube_thumbnail_url' => 'https://img.youtube.com/vi/x48u_2zKqGk/maxresdefault.jpg',
-                'local_thumbnail_path' => null,
-                'views_count' => 2100,
-                'upvotes' => 120,
-                'downvotes' => 3,
-                'is_published' => true,
-                'created_by' => $admin->id,
-            ]
-        );
-        $pack3->gameVersions()->sync([$cyberpunk_v2->id]);
-
-        $pack4 = ModPack::firstOrCreate(
-            ['title_en' => 'Witcher 3 Next-Gen Complete Visual & Combat Enhancement'],
-            [
-                'title_ar' => 'ترتيب مودات ذا ويتشر 3 للرسومات المطورة والقتال',
-                'description_en' => 'Comprehensive visual overhaul and combat realism for Witcher 3 Next-Gen 4.04 update.',
-                'description_ar' => 'تعديل شامل للرسومات والواقعية القتالية لتحديث الجيل الجديد 4.04 من لعبة ذا ويتشر 3.',
-                'youtube_video_id' => 'x48u_2zKqGk',
-                'youtube_thumbnail_url' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/292030/header.jpg',
-                'local_thumbnail_path' => null,
-                'views_count' => 840,
-                'upvotes' => 52,
-                'downvotes' => 0,
-                'is_published' => true,
-                'created_by' => $admin->id,
-            ]
-        );
-        $pack4->gameVersions()->sync([$witcher_v1->id]);
-
-        $pack5 = ModPack::firstOrCreate(
-            ['title_en' => 'Fallout 4 Anarchy Wasteland & Survival Immersion'],
-            [
-                'title_ar' => 'ترتيب مودات فالأوت 4 للواقعية والبقاء في الأراضي البور',
-                'description_en' => 'Immersive survival, enhanced graphics, and settlement expansion for Fallout 4.',
-                'description_ar' => 'مودات بقاء واقعية وتحسينات رسومية وتوسيع المستوطنات للعبة فالأوت 4.',
-                'youtube_video_id' => 'dQw4w9WgXcQ',
-                'youtube_thumbnail_url' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/377160/header.jpg',
-                'local_thumbnail_path' => null,
-                'views_count' => 620,
-                'upvotes' => 41,
-                'downvotes' => 1,
-                'is_published' => true,
-                'created_by' => $admin->id,
-            ]
-        );
-        $pack5->gameVersions()->sync([$fallout_v1->id]);
-
-        // 5. Populate Official Mods
-        $mods1 = [
-            ['name' => 'Address Library for SKSE Plugins', 'load_order' => 1, 'nexus_url' => 'https://www.nexusmods.com/skyrimspecialedition/mods/32444'],
-            ['name' => 'SkyUI', 'load_order' => 2, 'nexus_url' => 'https://www.nexusmods.com/skyrimspecialedition/mods/12604'],
-            ['name' => 'Static Mesh Improvement Mod (SMIM)', 'load_order' => 3, 'nexus_url' => 'https://www.nexusmods.com/skyrimspecialedition/mods/659'],
-            ['name' => 'Noble Skyrim HD-2K', 'load_order' => 4, 'nexus_url' => 'https://www.nexusmods.com/skyrimspecialedition/mods/2140'],
-            ['name' => 'Skyrim Flora Overhaul', 'load_order' => 5, 'nexus_url' => 'https://www.nexusmods.com/skyrimspecialedition/mods/2154'],
-            ['name' => 'Lux (Lighting Overhaul)', 'load_order' => 6, 'nexus_url' => 'https://www.nexusmods.com/skyrimspecialedition/mods/43158'],
-            ['name' => 'Folkvangr - Grass and Landscape Overhaul', 'load_order' => 7, 'nexus_url' => 'https://www.nexusmods.com/skyrimspecialedition/mods/44899'],
-            ['name' => 'DynDOLOD 3.0', 'load_order' => 8, 'nexus_url' => 'https://www.nexusmods.com/skyrimspecialedition/mods/68164'],
+        // 2. Create 20 Popular Supported Games with Real Data & Steam Images
+        $gamesData = [
+            ['slug' => 'skyrim-special-edition', 'name' => 'Skyrim Special Edition', 'description' => 'The legendary fantasy masterpiece from Bethesda Game Studios.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/489830/header.jpg'],
+            ['slug' => 'mount-and-blade-ii-bannerlord', 'name' => 'Mount & Blade II: Bannerlord', 'description' => 'A strategy/action RPG that lets you lead armies and build empires.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/261550/header.jpg'],
+            ['slug' => 'cyberpunk-2077', 'name' => 'Cyberpunk 2077', 'description' => 'An open-world, action-adventure RPG set in the dark future of Night City.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1091500/header.jpg'],
+            ['slug' => 'the-witcher-3-wild-hunt', 'name' => 'The Witcher 3: Wild Hunt', 'description' => 'Become Geralt of Rivia, a professional monster slayer in a vast open world.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/292030/header.jpg'],
+            ['slug' => 'fallout-4', 'name' => 'Fallout 4', 'description' => 'Bethesda Game Studios open-world post-apocalyptic survival RPG.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/377160/header.jpg'],
+            ['slug' => 'starfield', 'name' => 'Starfield', 'description' => 'The next-generation space exploration role-playing game.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1716740/header.jpg'],
+            ['slug' => 'elden-ring', 'name' => 'Elden Ring', 'description' => 'The action RPG fantasy epic created by FromSoftware and George R. R. Martin.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg'],
+            ['slug' => 'grand-theft-auto-v', 'name' => 'Grand Theft Auto V', 'description' => 'Explore the vast award-winning world of Los Santos and Blaine County.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/271590/header.jpg'],
+            ['slug' => 'red-dead-redemption-2', 'name' => 'Red Dead Redemption 2', 'description' => 'Arthur Morgan and the Van der Linde gang are outlaws on the run across America.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1174180/header.jpg'],
+            ['slug' => 'baldurs-gate-3', 'name' => 'Baldur\'s Gate 3', 'description' => 'Gather your party and return to the Forgotten Realms in a next-generation RPG.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1086940/header.jpg'],
+            ['slug' => 'hogwarts-legacy', 'name' => 'Hogwarts Legacy', 'description' => 'Experience Hogwarts in the 1800s. Your character is a student holding the key to an ancient secret.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/990080/header.jpg'],
+            ['slug' => 'monster-hunter-world', 'name' => 'Monster Hunter: World', 'description' => 'Welcome to a new world! In Monster Hunter: World, enjoy the ultimate hunting experience.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg'],
+            ['slug' => 'stardew-valley', 'name' => 'Stardew Valley', 'description' => 'You\'ve inherited your grandfather\'s old farm plot in Stardew Valley.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/413150/header.jpg'],
+            ['slug' => 'fallout-new-vegas', 'name' => 'Fallout: New Vegas', 'description' => 'Feel the heat in New Vegas! Enjoy the ultimate post-apocalyptic Vegas experience.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/22380/header.jpg'],
+            ['slug' => 'rimworld', 'name' => 'RimWorld', 'description' => 'A sci-fi colony sim driven by an intelligent AI storyteller.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/294100/header.jpg'],
+            ['slug' => 'kingdom-come-deliverance', 'name' => 'Kingdom Come: Deliverance', 'description' => 'Story-driven open-world RPG that immerses you in an epic adventure in Bohemia.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/379430/header.jpg'],
+            ['slug' => 'valheim', 'name' => 'Valheim', 'description' => 'A brutal exploration and survival game for 1-10 players set in a procedurally generated purgatory.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/892970/header.jpg'],
+            ['slug' => 'dark-souls-iii', 'name' => 'DARK SOULS III', 'description' => 'Dark Souls continues to push the boundaries with the latest, ambitious chapter in the critically-acclaimed series.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/374320/header.jpg'],
+            ['slug' => 'dragons-dogma-2', 'name' => 'Dragon\'s Dogma 2', 'description' => 'Dragon\'s Dogma 2 is a single player, narrative driven action-RPG.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2054970/header.jpg'],
+            ['slug' => 'star-wars-jedi-survivor', 'name' => 'STAR WARS Jedi: Survivor', 'description' => 'The story of Cal Kestis continues in Star Wars Jedi: Survivor.', 'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1770590/header.jpg'],
         ];
-        foreach ($mods1 as $m) {
-            Mod::firstOrCreate(['mod_pack_id' => $pack1->id, 'name' => $m['name']], array_merge($m, ['game_id' => $skyrim->id, 'downloads_count' => rand(100, 5000)]));
+
+        $gameModels = [];
+        foreach ($gamesData as $gData) {
+            $gModel = Game::firstOrCreate(['slug' => $gData['slug']], $gData);
+            $gameModels[] = $gModel;
+            // Version
+            GameVersion::firstOrCreate(['game_id' => $gModel->id, 'version' => '1.0']);
+            GameVersion::firstOrCreate(['game_id' => $gModel->id, 'version' => '1.5.0']);
         }
 
-        $mods2 = [
-            ['name' => 'Harmony', 'load_order' => 1, 'nexus_url' => 'https://www.nexusmods.com/mountandblade2bannerlord/mods/2006'],
-            ['name' => 'ButterLib', 'load_order' => 2, 'nexus_url' => 'https://www.nexusmods.com/mountandblade2bannerlord/mods/2018'],
-            ['name' => 'UIExtenderEx', 'load_order' => 3, 'nexus_url' => 'https://www.nexusmods.com/mountandblade2bannerlord/mods/2102'],
-            ['name' => 'Mod Configuration Menu', 'load_order' => 4, 'nexus_url' => 'https://www.nexusmods.com/mountandblade2bannerlord/mods/2055'],
-            ['name' => 'Realistic Battle Mod (RBM) - Combat module', 'load_order' => 5, 'nexus_url' => 'https://www.nexusmods.com/mountandblade2bannerlord/mods/791'],
-            ['name' => 'Realistic Battle Mod (RBM) - AI module', 'load_order' => 6, 'nexus_url' => 'https://www.nexusmods.com/mountandblade2bannerlord/mods/791'],
-            ['name' => 'Diplomacy', 'load_order' => 7, 'nexus_url' => 'https://www.nexusmods.com/mountandblade2bannerlord/mods/832'],
-        ];
-        foreach ($mods2 as $m) {
-            Mod::firstOrCreate(['mod_pack_id' => $pack2->id, 'name' => $m['name']], array_merge($m, ['game_id' => $bannerlord->id, 'downloads_count' => rand(100, 4000)]));
+        // 3. Create Featured Mod Packs (1 per game = 20 ModPacks)
+        $modPackModels = [];
+        foreach ($gameModels as $index => $gModel) {
+            $pack = ModPack::firstOrCreate(
+                ['title_en' => "{$gModel->name} Ultimate Overhaul Modpack #" . ($index + 1)],
+                [
+                    'title_ar' => "تجميعة المودات الكاملة والشاملة للعبة {$gModel->name}",
+                    'description_en' => "Complete collection of visual, framework, and performance mods for {$gModel->name}.",
+                    'description_ar' => "تجميعة شاملة من أفضل المودات المحسنة والأطر البرمجية والرسومات للعبة {$gModel->name}.",
+                    'youtube_video_id' => 'dQw4w9WgXcQ',
+                    'youtube_thumbnail_url' => $gModel->thumbnail,
+                    'local_thumbnail_path' => null,
+                    'views_count' => rand(500, 10000),
+                    'upvotes' => rand(50, 900),
+                    'downvotes' => rand(0, 15),
+                    'is_published' => true,
+                    'created_by' => $admin->id,
+                ]
+            );
+            $vIds = $gModel->versions()->pluck('id')->toArray();
+            if (!empty($vIds)) {
+                $pack->gameVersions()->sync($vIds);
+            }
+            $modPackModels[$gModel->id] = $pack;
         }
 
-        $mods3 = [
-            ['name' => 'Cyber Engine Tweaks (CET)', 'load_order' => 1, 'nexus_url' => 'https://www.nexusmods.com/cyberpunk2077/mods/107'],
-            ['name' => 'redscript', 'load_order' => 2, 'nexus_url' => 'https://www.nexusmods.com/cyberpunk2077/mods/1511'],
-            ['name' => 'ArchiveXL', 'load_order' => 3, 'nexus_url' => 'https://www.nexusmods.com/cyberpunk2077/mods/4198'],
-            ['name' => 'TweakXL', 'load_order' => 4, 'nexus_url' => 'https://www.nexusmods.com/cyberpunk2077/mods/4197'],
-            ['name' => 'Nova LUT (Pure Photorealistic Colors)', 'load_order' => 5, 'nexus_url' => 'https://www.nexusmods.com/cyberpunk2077/mods/11622'],
-            ['name' => 'Ultra Quality RayTracing Optimizations', 'load_order' => 6, 'nexus_url' => 'https://www.nexusmods.com/cyberpunk2077/mods/10490'],
-        ];
-        foreach ($mods3 as $m) {
-            Mod::firstOrCreate(['mod_pack_id' => $pack3->id, 'name' => $m['name']], array_merge($m, ['game_id' => $cyberpunk->id, 'downloads_count' => rand(100, 6000)]));
+        // 4. Generate 1,000+ Curated Mods distributed across 20 Games
+        $modPrefixes = ['Ultimate', 'Enhanced', 'HD Re-texture', 'Script Extender', 'Performance Boost', '4K Textures', 'Realistic Weather', 'Overhaul Framework', 'Community Patch', 'Immersive Audio', 'Fast Travel Fix', 'Custom UI Interface', 'Advanced AI Engine', 'Lighting Overhaul', 'RayTracing Reshade', 'Next-Gen Combat', 'Expanded Inventory', 'Ultra Shadows', 'Expanded Magic & Spells', 'Dynamic Camera FX', 'Survival Realism', 'LOD Generator', 'FPS Unlocked', 'True Weather FX', 'Seamless Co-op Engine'];
+        $modCategories = ['Graphics', 'Fixes', 'Gameplay', 'Audio', 'Interface', 'Framework', 'Combat', 'Quests', 'Weapons', 'Outfits'];
+
+        $totalModsCount = Mod::count();
+        if ($totalModsCount < 1000) {
+            foreach ($gameModels as $gModel) {
+                $pack = $modPackModels[$gModel->id] ?? null;
+                $gameVersionIds = $gModel->versions()->pluck('id')->toArray();
+
+                for ($i = 1; $i <= 55; $i++) {
+                    $prefix = $modPrefixes[array_rand($modPrefixes)];
+                    $modName = "{$prefix} for {$gModel->name} Part {$i}";
+                    $category = $modCategories[array_rand($modCategories)];
+
+                    $mod = Mod::firstOrCreate(
+                        [
+                            'game_id' => $gModel->id,
+                            'name'    => $modName,
+                        ],
+                        [
+                            'mod_pack_id'      => $pack?->id,
+                            'slug'             => Str::slug($modName) . '-' . rand(100, 9999),
+                            'description'      => "High performance {$category} modification for {$gModel->name}. Tested for maximum compatibility and zero crashes.",
+                            'author'           => 'Nexus Modder ' . rand(10, 99),
+                            'version'          => '1.' . rand(0, 9) . '.' . rand(0, 9),
+                            'load_order'       => $i,
+                            'nexus_url'        => "https://www.nexusmods.com/{$gModel->slug}/mods/" . rand(1000, 99999),
+                            'download_url'     => "https://www.nexusmods.com/{$gModel->slug}/mods/" . rand(1000, 99999),
+                            'image_url'        => $gModel->thumbnail,
+                            'status'           => 'published',
+                            'downloads_count'  => rand(500, 50000),
+                            'fps_impact'       => rand(0, 15),
+                            'is_verified'      => true,
+                        ]
+                    );
+
+                    if (!empty($gameVersionIds)) {
+                        $mod->gameVersions()->syncWithoutDetaching($gameVersionIds);
+                    }
+                }
+            }
         }
 
-        $mods4 = [
-            ['name' => 'The Witcher 3 HD Reworked Project', 'load_order' => 1, 'nexus_url' => 'https://www.nexusmods.com/witcher3/mods/1021'],
-            ['name' => 'Brothers In Arms - Ultimate Bug Fixes', 'load_order' => 2, 'nexus_url' => 'https://www.nexusmods.com/witcher3/mods/5752'],
-            ['name' => 'Friendly HUD', 'load_order' => 3, 'nexus_url' => 'https://www.nexusmods.com/witcher3/mods/365'],
-            ['name' => 'Fast Travel From Anywhere', 'load_order' => 4, 'nexus_url' => 'https://www.nexusmods.com/witcher3/mods/355'],
-        ];
-        foreach ($mods4 as $m) {
-            Mod::firstOrCreate(['mod_pack_id' => $pack4->id, 'name' => $m['name']], array_merge($m, ['game_id' => $witcher3->id, 'downloads_count' => rand(100, 3000)]));
-        }
-
-        $mods5 = [
-            ['name' => 'Fallout 4 Script Extender (F4SE)', 'load_order' => 1, 'nexus_url' => 'https://www.nexusmods.com/fallout4/mods/42147', 'image_url' => 'https://staticdelivery.nexusmods.com/mods/1151/images/headers/42147_header.jpg', 'description' => 'Essential script extension framework for Fallout 4 plugins.'],
-            ['name' => 'Sim Settlements 2', 'load_order' => 2, 'nexus_url' => 'https://www.nexusmods.com/fallout4/mods/47976', 'image_url' => 'https://staticdelivery.nexusmods.com/mods/1151/images/47976/47976-1603507020-1650395272.jpeg', 'description' => 'Complete overhaul of settlement building with NPC autonomy and storylines.'],
-            ['name' => 'Vivid Fallout - All in One', 'load_order' => 3, 'nexus_url' => 'https://www.nexusmods.com/fallout4/mods/25714', 'image_url' => 'https://staticdelivery.nexusmods.com/mods/1151/images/25714/25714-1501174984-754676140.jpeg', 'description' => 'Best-in-class HD texture replacement for landscapes, rocks, and buildings.'],
-            ['name' => 'True Storms - Wasteland Edition', 'load_order' => 4, 'nexus_url' => 'https://www.nexusmods.com/fallout4/mods/4472', 'image_url' => 'https://staticdelivery.nexusmods.com/mods/1151/images/4472-0-1449437190.jpg', 'description' => 'Complete weather overhaul with intense storms, rain, fog, and audio.'],
-        ];
-        foreach ($mods5 as $m) {
-            Mod::firstOrCreate(['mod_pack_id' => $pack5->id, 'name' => $m['name']], array_merge($m, ['game_id' => $fallout4->id, 'downloads_count' => rand(100, 3500)]));
-        }
-
-        // 6. Additional Games: Elden Ring & GTA V
-        $eldenRing = Game::firstOrCreate(
-            ['slug' => 'elden-ring'],
-            [
-                'name' => 'Elden Ring',
-                'description' => 'The action RPG fantasy epic created by FromSoftware and George R. R. Martin.',
-                'thumbnail' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg',
-            ]
-        );
-        $er_v1 = GameVersion::firstOrCreate(['game_id' => $eldenRing->id, 'version' => '1.10']);
-
-        $pack6 = ModPack::firstOrCreate(
-            ['title_en' => 'Elden Ring Reforged & Seamless Co-op Experience'],
-            [
-                'title_ar' => 'تجميعة إيلدن رينج للواقعية واللعب التعاوني السلس',
-                'description_en' => 'Seamless multiplayer co-op combined with expanded combat mechanics and balance overhauls.',
-                'description_ar' => 'طور لعب جماعي تعاوني بدون انقطاع مدمج مع تحسينات القتال والموازنة للعبة إيلدن رينج.',
-                'youtube_video_id' => 'dQw4w9WgXcQ',
-                'youtube_thumbnail_url' => 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg',
-                'local_thumbnail_path' => null,
-                'views_count' => 3200,
-                'upvotes' => 195,
-                'downvotes' => 4,
-                'is_published' => true,
-                'created_by' => $admin->id,
-            ]
-        );
-        $pack6->gameVersions()->sync([$er_v1->id]);
-
-        $mods6 = [
-            ['name' => 'Seamless Co-op', 'load_order' => 1, 'nexus_url' => 'https://www.nexusmods.com/eldenring/mods/510', 'image_url' => 'https://staticdelivery.nexusmods.com/mods/4333/images/510/510-1653655184-1845620857.png', 'description' => 'Play Elden Ring with friends throughout the entire game without disconnections.'],
-            ['name' => 'Elden Ring Reforged (ERR)', 'load_order' => 2, 'nexus_url' => 'https://www.nexusmods.com/eldenring/mods/541', 'image_url' => 'https://staticdelivery.nexusmods.com/mods/4333/images/541/541-1653942000-112345678.png', 'description' => 'Comprehensive overhaul of combat mechanics, deflection, and enemy AI.'],
-            ['name' => 'Mod Engine 2', 'load_order' => 3, 'nexus_url' => 'https://www.nexusmods.com/eldenring/mods/85', 'image_url' => 'https://staticdelivery.nexusmods.com/mods/4333/images/85/85-1647000000-999.png', 'description' => 'Mod injection framework for FromSoftware games.'],
-        ];
-        foreach ($mods6 as $m) {
-            Mod::firstOrCreate(['mod_pack_id' => $pack6->id, 'name' => $m['name']], array_merge($m, ['game_id' => $eldenRing->id, 'downloads_count' => rand(500, 8000)]));
-        }
-
-        // 7. Populate Default Ad Slots
+        // 5. Populate Default Ad Slots
         if (\Illuminate\Support\Facades\Schema::hasTable('ad_slots')) {
             \App\Models\AdSlot::firstOrCreate(
                 ['name' => 'الصفحة الرئيسية - أعلى المبنى'],

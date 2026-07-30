@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Copy brand logo and favicon if present in brain artifacts
         try {
-            $brandLogoSource = 'C:/Users/HP/.gemini/antigravity-ide/brain/2501c851-5dbf-4956-a848-35482d70502d/media__1785378010849.jpg';
+            $brandLogoSource = 'C:/Users/HP/.gemini/antigravity-ide/brain/2501c851-5dbf-4956-a848-35482d70502d/load_order_hub_logo_1785379741746.png';
             if (file_exists($brandLogoSource)) {
                 $imgDir = public_path('images');
                 if (!file_exists($imgDir)) {
@@ -85,8 +85,10 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
 
-            if (\Illuminate\Support\Facades\Schema::hasTable('games') && \App\Models\Game::count() === 0) {
-                \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+            if (\Illuminate\Support\Facades\Schema::hasTable('games')) {
+                if (\App\Models\Game::count() < 6 || (\Illuminate\Support\Facades\Schema::hasTable('mods') && \App\Models\Mod::count() < 15)) {
+                    \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+                }
             }
         } catch (\Throwable $adminErr) {
             // Ignore
