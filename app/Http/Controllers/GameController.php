@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Game;
 use App\Models\GameVersion;
 use App\Models\ModPack;
+use App\Models\Mod;
 use Illuminate\Http\Request;
 
 class GameController extends Controller
