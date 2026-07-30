@@ -83,7 +83,13 @@ class GameController extends Controller
             ]);
         }
 
-        return view('games.show', compact('game', 'versions', 'selectedVersionId', 'modPacks'));
+        $gameMods = Mod::where('game_id', $game->id)
+            ->where('status', 'published')
+            ->orderBy('name')
+            ->take(12)
+            ->get();
+
+        return view('games.show', compact('game', 'versions', 'selectedVersionId', 'modPacks', 'gameMods'));
     }
 
     public function redirectLink(Request $request)

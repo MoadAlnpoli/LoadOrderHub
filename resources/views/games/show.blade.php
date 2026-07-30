@@ -96,6 +96,39 @@
             <div id="mod-packs-container" class="transition-opacity duration-200">
                 @include('games.partials.mod_packs_list', ['modPacks' => $modPacks])
             </div>
+
+            <!-- Mods in this Game Section -->
+            <div class="pt-8 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <h2 class="text-xl font-bold tracking-wide text-white flex items-center space-x-2 rtl:space-x-reverse">
+                        <i class="fa-solid fa-cube text-violet-500"></i>
+                        <span>{{ app()->getLocale() == 'ar' ? 'مودات هذه اللعبة' : 'Mods in this Game' }}</span>
+                    </h2>
+                    <a href="{{ route('games.mods', $game->slug) }}" class="text-xs font-bold text-violet-400 hover:text-violet-300 flex items-center gap-1">
+                        <span>{{ app()->getLocale() == 'ar' ? 'عرض جميع المودات' : 'View All Mods' }} ({{ $game->mods()->count() }})</span>
+                        <i class="fa-solid fa-arrow-left rtl:rotate-180"></i>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @forelse($gameMods as $gMod)
+                        <a href="{{ route('mods.show', $gMod->slug) }}" class="flex items-center gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-violet-500/40 transition-all group">
+                            <div class="w-14 h-14 rounded-lg overflow-hidden bg-slate-950 shrink-0">
+                                <img src="{{ $gMod->display_image }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform" onerror="this.onerror=null; this.src='{{ asset('images/logo.png') }}';">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-xs font-bold text-white group-hover:text-violet-400 transition-colors truncate">{{ $gMod->name }}</h4>
+                                <p class="text-[10px] text-slate-400 truncate mt-0.5">{{ $gMod->author ?: 'Nexus Creator' }}</p>
+                                <span class="text-[9px] font-mono text-violet-400 mt-1 inline-block">Order #{{ $gMod->load_order }}</span>
+                            </div>
+                        </a>
+                    @empty
+                        <div class="col-span-full text-center py-6 text-xs text-slate-500">
+                            {{ app()->getLocale() == 'ar' ? 'لا توجد مودات مسجلة لهذه اللعبة حالياً.' : 'No mods catalogued for this game yet.' }}
+                        </div>
+                    @endforelse
+                </div>
+            </div>
         </div>
 
     </div>

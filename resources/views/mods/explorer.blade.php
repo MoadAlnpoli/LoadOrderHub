@@ -135,8 +135,9 @@
             </div>
 
             <!-- Native Ad Spot in Grid -->
-                        @if($loop->index == 2)
+            @if($loop->index == 2)
                 <x-ad-slot type="in_content" />
+            @endif
         @empty
             <div class="col-span-full py-16 text-center text-slate-500">
                 <i class="fa-solid fa-folder-open text-4xl mb-4"></i>
